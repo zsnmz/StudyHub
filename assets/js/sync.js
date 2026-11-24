@@ -291,6 +291,7 @@
     var v = String(value || '').trim();
     if (!/^[A-Za-z0-9_-]{8,64}$/.test(v)) return false;
     lsSet(ID_KEY, v);
+    lsSet(META_KEY, '');
     state.id = v;
     location.reload();
     return true;
