@@ -1,13 +1,17 @@
-/* 全套四级：高频词 SRS、听力/阅读练习、写译键盘作答、26 天计划。 */
+/* 全套复习：高频词 SRS、听力/阅读练习、写译键盘作答、按目标日期排计划。 */
 (function (global) {
   'use strict';
   var SH = global.StudyHub;
-  var D = global.StudyHubData || {};
-  var CAT = D.cet4Vocab || { words: [] };
-  var RD = D.cet4Reading || { sets: [] };
-  var LS = D.cet4Listening || { sets: [] };
-  var WR = D.cet4Write || { writing: [], translation: [] };
+  var TRACK = (SH.tracks && SH.tracks.current()) || { id: 'cet4', name: '四级', label: 'CET-4' };
+  var CAT = TRACK.vocab || { words: [] };
+  var RD = TRACK.reading || { sets: [] };
+  var LS = TRACK.listening || { sets: [] };
+  var WR = TRACK.write || { writing: [], translation: [] };
+  var TRACK_ID = TRACK.id;
+  var TRACK_NAME = TRACK.name;
+  var TRACK_LABEL = TRACK.label;
   var WORDS = (CAT.words || []).slice();
+  var SPRINT_ITEMS = (TRACK.data && TRACK.data.items) || [];
   var BY_ID = {};
   WORDS.forEach(function (w) { BY_ID[w.id] = w; });
   var GAP = [0, 1, 2, 4, 7, 15, 30];
@@ -34,7 +38,8 @@
   function settings() { return SH.state.settings(); }
   function daysLeft() {
     var n = 0;
-    try { n = SH.state.daysUntil(settings().examDate); } catch (e) { n = 0; }
+    var s = settings();
+    try { n = SH.state.daysUntil(s.targetDate || s.examDate); } catch (e) { n = 0; }
     return Math.max(0, n);
   }
   function toast(msg) {
@@ -185,16 +190,16 @@
     var pct = todayPercent();
     return '<section class="fu-hero">' +
       '<div class="fu-hero-main">' +
-        '<div class="fu-kicker">CET-4 · 全套复习</div>' +
-        '<h1>把四级拆成每天能做完的小任务</h1>' +
+        '<div class="fu-kicker">' + TRACK_LABEL + ' · 全套复习</div>' +
+        '<h1>把' + TRACK_NAME + '拆成每天能做完的小任务</h1>' +
         '<p>高频词 ' + WORDS.length + ' 个 · 听力 ' + LS.sets.length + ' 套 · 阅读 ' + RD.sets.length +
-          ' 篇 · 写译 ' + (WR.writing.length + WR.translation.length) + ' 题 · 冲刺 223 卡</p>' +
+          ' 篇 · 写译 ' + (WR.writing.length + WR.translation.length) + ' 题 · 冲刺 ' + SPRINT_ITEMS.length + ' 卡</p>' +
         '<div class="fu-hero-actions">' +
           '<button type="button" class="btn primary" data-act="start-daily">开始今日全套</button>' +
-          '<button type="button" class="btn" data-go="plan">看 26 天计划</button>' +
+          '<button type="button" class="btn" data-go="plan">看 ' + left + ' 天计划</button>' +
         '</div>' +
       '</div>' +
-      '<div class="fu-ring"><b>' + left + '</b><span>天后考试</span>' +
+      '<div class="fu-ring"><b>' + left + '</b><span>天后目标</span>' +
         '<div class="fu-ring-bar"><i style="width:' + pct + '%"></i></div>' +
         '<em>今日完成 ' + pct + '%</em></div>' +
     '</section>';
@@ -268,7 +273,7 @@
         '<div class="fu-stat"><span>已学词汇</span><b>' + learnedCount() + '</b><em>/ ' + WORDS.length + '</em></div>' +
         '<div class="fu-stat"><span>今日新词</span><b>' + nv + '</b><em>/ ' + daily + '</em></div>' +
         '<div class="fu-stat"><span>待复习</span><b>' + due + '</b><em>个</em></div>' +
-        '<div class="fu-stat"><span>距考试</span><b>' + left + '</b><em>天</em></div>' +
+        '<div class="fu-stat"><span>距目标</span><b>' + left + '</b><em>天</em></div>' +
       '</div>' +
       '<div class="card fu-card">' +
         '<div class="fu-card-head"><h2>今日任务</h2><span class="muted small">按顺序做，做完一项算一项</span></div>' +
@@ -282,8 +287,8 @@
       '</div>' +
       '<div class="card fu-card">' +
         '<div class="fu-card-head"><h2>怎么用</h2></div>' +
-        '<p class="muted small">先背高频词（10 个新词 + 到期复习），再做一套听力或阅读，最后用键盘写一篇作文或翻译。冲刺页的 223 张卡是作文/翻译素材，零碎时间刷。所有进度只存在这个浏览器里。</p>' +
-        '<p class="muted small">听力/阅读是按四级题型编写的仿真练习（PDF 资料里没有完整真题原卷）；写译用键盘作答，草稿自动保存，电脑和手机都能用。</p>' +
+        '<p class="muted small">先背高频词（今日 ' + dailyNew() + ' 个新词 + 到期复习），再做一套听力或阅读，最后用键盘写一篇作文或翻译。冲刺页的 ' + SPRINT_ITEMS.length + ' 张卡是作文/翻译素材，零碎时间刷。所有进度只存在这个浏览器里。</p>' +
+        '<p class="muted small">听力/阅读是按' + TRACK_NAME + '题型编写的仿真练习（PDF 资料里没有完整真题原卷）；写译用键盘作答，草稿自动保存，电脑和手机都能用。</p>' +
       '</div>';
   }
 
@@ -304,7 +309,7 @@
         '<button type="button" class="btn" data-act="dict-start">打字检测</button>' +
       '</div>' +
       '<div class="card fu-card">' +
-        '<div class="fu-card-head"><h2>196 个高频词</h2><span class="muted small">按真题词频排序</span></div>' +
+        '<div class="fu-card-head"><h2>' + WORDS.length + ' 个高频词</h2><span class="muted small">按真题词频排序</span></div>' +
         '<div class="fu-vtools"><input id="fu-vsearch" class="fu-input" placeholder="搜索单词或中文" autocomplete="off">' +
         '<select id="fu-vfilter" class="fu-input fu-select"><option value="all">全部</option><option value="new">未学</option><option value="learning">学习中</option><option value="mastered">已熟悉</option></select></div>' +
         '<div class="fu-vlist" id="fu-vlist"></div>' +
@@ -687,7 +692,7 @@
           '<button type="button" class="btn small" data-act="write-start" data-mode="' + writeMode + '" data-id="' + x.id + '">' + (d ? '再写一次' : '开始作答') + '</button></div>' +
         '</div>';
       }).join('') + '</div>' +
-      '<p class="muted small">用键盘作答，计时结束再看范文；自评分按四级 15 分制，作答文本会保存。</p>';
+      '<p class="muted small">用键盘作答，计时结束再看范文；自评分按 15 分制，作答文本会保存。</p>';
   }
   function findWrite(mode, id) {
     var arr = mode === 'writing' ? WR.writing : WR.translation;
@@ -782,19 +787,37 @@
   /* ---------- 计划 ---------- */
   function renderPlan() {
     var left = daysLeft();
-    var phases = [
-      { name: '基础期', range: '第 1–10 天', desc: '每天 10 个新词 + 1 套听力/阅读交替 + 1 篇写译', cls: 'blue' },
-      { name: '强化期', range: '第 11–20 天', desc: '新词减半、错词优先；听力阅读二刷，写译换题型', cls: 'orange' },
-      { name: '冲刺期', range: '最后 6 天', desc: '只复习到期词和错题；每天 1 套限时写译 + 冲刺卡', cls: 'red' }
-    ];
+    var s = settings();
+    var target = s.targetDate || s.examDate;
+    if (!left) {
+      body.innerHTML =
+        '<div class="card fu-card"><div class="fu-card-head"><h2>目标日期已到/已过</h2></div>' +
+        '<p class="muted small">当前目标日期是 ' + esc(target) + '。请到「设置 → 目标学习日期」改成一个未来日期，计划会自动重排。</p>' +
+        '<button type="button" class="btn" data-go="plan">刷新计划</button></div>';
+      return;
+    }
+    var shortPlan = left <= 3;
+    var p1 = Math.max(1, Math.round(left * 0.4));
+    var p2 = Math.max(p1, Math.round(left * 0.75));
+    if (p2 >= left) p2 = Math.max(1, left - 1);
+    var phases = shortPlan
+      ? [{ name: '复习期', range: '第 1–' + left + ' 天', desc: '目标很近了：只复习到期词和错题；每天 1 套限时写译 + 冲刺卡', cls: 'red' }]
+      : [
+        { name: '基础期', range: '第 1–' + p1 + ' 天', desc: '每天 ' + dailyNew() + ' 个新词 + 1 套听力/阅读交替 + 1 篇写译', cls: 'blue' },
+        { name: '强化期', range: '第 ' + (p1 + 1) + '–' + p2 + ' 天', desc: '新词按剩余量分配，错词优先；听力阅读二刷，写译换题型', cls: 'orange' },
+        { name: '冲刺期', range: '最后 ' + Math.max(1, left - p2) + ' 天', desc: '只复习到期词和错题；每天 1 套限时写译 + 冲刺卡', cls: 'red' }
+      ];
     var rows = [];
+    var dnew = dailyNew();
     for (var i = 0; i < left; i++) {
       var date = addDays(today(), i);
-      var phase = i < 10 ? '基础' : (i < 20 ? '强化' : '冲刺');
-      var vocab = i < left - 3 ? (i < 10 ? '10 新词' : '复习 20 词') : '只复习';
-      var lset = LS.sets[i % Math.max(1, LS.sets.length)];
-      var rset = RD.sets[i % Math.max(1, RD.sets.length)];
-      var witem = i % 2 ? WR.writing[(Math.floor(i / 2)) % Math.max(1, WR.writing.length)] : WR.translation[(Math.floor(i / 2)) % Math.max(1, WR.translation.length)];
+      var phase = shortPlan ? '复习' : (i < p1 ? '基础' : (i < p2 ? '强化' : '冲刺'));
+      var vocab = shortPlan ? '只复习' : (i < left - 3 ? (dnew > 0 ? dnew + ' 新词' : '复习 20 词') : '只复习');
+      var lset = LS.sets.length ? LS.sets[i % LS.sets.length] : null;
+      var rset = RD.sets.length ? RD.sets[i % RD.sets.length] : null;
+      var witem = null;
+      if (i % 2) { if (WR.writing.length) witem = WR.writing[Math.floor(i / 2) % WR.writing.length]; }
+      else if (WR.translation.length) witem = WR.translation[Math.floor(i / 2) % WR.translation.length];
       rows.push('<tr' + (i === 0 ? ' class="today"' : '') + '><td>' + date.slice(5) + '</td><td>' + phase + '</td><td>' + vocab +
         '</td><td>' + esc(lset ? lset.title : '—') + '</td><td>' + esc(rset ? rset.title : '—') +
         '</td><td>' + esc(witem ? witem.title : '—') + '</td><td>10 卡</td></tr>');
@@ -803,10 +826,10 @@
       '<div class="fu-phases">' + phases.map(function (p) {
         return '<div class="fu-phase ' + p.cls + '"><b>' + p.name + '</b><span>' + p.range + '</span><p>' + p.desc + '</p></div>';
       }).join('') + '</div>' +
-      '<div class="card fu-card"><div class="fu-card-head"><h2>到考试前的逐日安排</h2><span class="muted small">按完成情况顺延，不必死卡日期</span></div>' +
+      '<div class="card fu-card"><div class="fu-card-head"><h2>到目标日前的逐日安排</h2><span class="muted small">按完成情况顺延，不必死卡日期</span></div>' +
       '<div class="fu-table-wrap"><table class="fu-table"><thead><tr><th>日期</th><th>阶段</th><th>词汇</th><th>听力</th><th>阅读</th><th>写译</th><th>冲刺</th></tr></thead><tbody>' +
-      (rows.length ? rows.join('') : '<tr><td colspan="7">考试日期已过，请在设置里修改。</td></tr>') +
-      '</tbody></table></div><p class="muted small" style="margin:8px 0 0">12 月 19 日考试；最后 3 天只复习，不再开新词。表里按“建议内容”轮换，没做完的顺延到第二天。</p></div>' +
+      (rows.length ? rows.join('') : '<tr><td colspan="7">目标日期已过，请在设置里修改。</td></tr>') +
+      '</tbody></table></div><p class="muted small" style="margin:8px 0 0">目标日期 ' + target + '；最后 3 天只复习，不再开新词。表里按“建议内容”轮换，没做完的顺延到第二天。</p></div>' +
       '<div class="card fu-card"><div class="fu-card-head"><h2>数据</h2></div>' +
       '<p class="muted small">全套进度和冲刺进度都保存在本机浏览器。换浏览器或清理网站数据会丢失。</p>' +
       '<button type="button" class="btn danger" data-act="reset-all">清空全套进度</button></div>';
@@ -906,7 +929,7 @@
   /* ---------- 听力音频（逐句 MP3，跨浏览器） ---------- */
   function audioLines() {
     if (!player || !player.set) return [];
-    var lib = (global.StudyHubData && global.StudyHubData.cet4ListeningAudio) || {};
+    var lib = TRACK.audio || {};
     var sets = lib.sets || {};
     return sets[player.set.id] || [];
   }
@@ -1013,7 +1036,7 @@
   global.StudyHub.views.full = {
     render: function (host, payload) {
       el = host;
-      st = SH.store.ns('full');
+      st = SH.store.ns(TRACK_ID === 'cet4' ? 'full' : 'full.' + TRACK_ID);
       S = load();
       tab = (payload && payload.tab) || S.lastTab || 'home';
       if (!TABS.some(function (t) { return t[0] === tab; })) tab = 'home';

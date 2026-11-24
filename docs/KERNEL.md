@@ -1,6 +1,6 @@
 # 学习舱 StudyHub · 项目内核
 
-- 版本：0.5.1
+- 版本：0.6.0
 - 更新：2026-11-24
 - 适用范围：`index.html`、`assets/`、`data/`、`server/`、`scripts/`
 
@@ -24,8 +24,9 @@
 ```text
 store.js
 sync.js                 ← 可选；单文件构建会移除
-data/words.js … cet4-write.js
-ui.js → core.js → learn.js → demo.js → timer.js → parser.js
+data/words.js … cet4-write.js → cet6-vocab.js → cet6-reading.js → cet6-listening.js
+→ cet6-listening-audio.js → cet6-write.js → cet6.js
+ui.js → core.js → tracks.js → learn.js → demo.js → timer.js → parser.js
 app.js                  ← DOMContentLoaded 时 boot()
 views/*.js              ← 注册 StudyHub.views.<name>
 sprint.js               ← 注册 sprint 视图 + StudyHub.sprint.summary()
@@ -111,6 +112,28 @@ document.dispatchEvent(new CustomEvent('studyhub:store', {
 ### 3.3 隐私模式
 
 localStorage 不可用时自动退化为内存 `memFallback`，当次会话可用，刷新即丢。设置页会显示当前档案，但不会专门提示“隐私模式”。
+
+### 3.4 备考方向（轨道）
+
+`assets/js/tracks.js` 注册 `cet4` / `cet6` 两个方向，每个方向带：
+
+```js
+{ id, name, label, full, data, vocab, reading, listening, audio, write }
+```
+
+- `StudyHub.tracks.current()` 读取 `settings().track`（默认 `cet4`）；
+- `full.js`、`sprint.js` 在加载时取当前轨道，切轨道需要刷新页面；
+- 进度键按轨道隔离：四级 `full` / `sprint`，六级 `full.cet6` / `sprint.cet6`；
+- 数据加载顺序必须保证 `cet6-vocab.js` 在 `cet6.js` 之前（`cet6.js` 会用前者的词生成翻译词卡）。
+
+目标日期：
+
+```text
+settings.targetDate  用户自选目标学习日期（默认等于 examDate）
+settings.examDate    仅记录考试日期，不参与排期
+```
+
+`full.js` 的 `daysLeft()`、`sprint.js` 的 `examDate()` 都优先用 `targetDate`；计划表按目标日期生成，最后 3 天只复习。
 
 ---
 

@@ -12,7 +12,17 @@
     host.innerHTML =
       '<div class="view-inner">' +
       '<div class="card"><h2>设置</h2>' +
-      '<div class="form-row"><label>四级考试日期</label>' +
+      '<div class="form-row"><label>备考方向</label>' +
+      '<select id="trackSelect" class="input">' +
+      '<option value="cet4"' + (s.track === 'cet4' ? ' selected' : '') + '>四级 CET-4</option>' +
+      '<option value="cet6"' + (s.track === 'cet6' ? ' selected' : '') + '>六级 CET-6</option>' +
+      '</select></div>' +
+      '<p class="muted">切换方向后页面会刷新；四级和六级的背诵、练习进度分别保存，互不覆盖。</p>' +
+      '<div class="form-row"><label>目标学习日期</label>' +
+      '<input id="targetDate" type="date" value="' + s.targetDate + '" /></div>' +
+      '<p class="muted">今天距目标日期还有 <b>' + Math.max(0, St.daysUntil(s.targetDate)) +
+      '</b> 天。每日新卡、听力/阅读/写译和冲刺计划都按这个日期自动分配，不必等于考试当天。</p>' +
+      '<div class="form-row"><label>考试日期（仅记录）</label>' +
       '<input id="examDate" type="date" value="' + s.examDate + '" /></div>' +
       '<p class="muted">' + s.examDateNote + '；今天距考试还有 <b>' +
       Math.max(0, St.daysUntil(s.examDate)) + '</b> 天。</p>' +
@@ -61,6 +71,20 @@
 
     function msg(t) { host.querySelector('#setMsg').textContent = t; }
 
+    host.querySelector('#trackSelect').addEventListener('change', function (e) {
+      var next = e.target.value === 'cet6' ? 'cet6' : 'cet4';
+      if (next === s.track) return;
+      if (!confirm('切换到' + (next === 'cet6' ? '六级' : '四级') + '？页面会刷新，两个方向的进度分开保存。')) {
+        e.target.value = s.track; return;
+      }
+      St.saveSettings({ track: next });
+      global.location.reload();
+    });
+    host.querySelector('#targetDate').addEventListener('change', function (e) {
+      if (!e.target.value) return;
+      St.saveSettings({ targetDate: e.target.value });
+      render(host);
+    });
     host.querySelector('#examDate').addEventListener('change', function (e) {
       if (!e.target.value) return;
       St.saveSettings({ examDate: e.target.value });

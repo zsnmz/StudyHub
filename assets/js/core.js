@@ -31,8 +31,11 @@
   /* ---------- 设置 ---------- */
   function settings() {
     var s = ns().get('settings', {}) || {};
+    var exam = s.examDate || '2026-12-19';
     return {
-      examDate: s.examDate || '2026-12-19',
+      examDate: exam,
+      targetDate: s.targetDate || exam,
+      track: s.track === 'cet6' ? 'cet6' : 'cet4',
       examDateNote: '日期需按官方通知确认，可在设置里修改',
       adaptive: s.adaptive !== false
     };

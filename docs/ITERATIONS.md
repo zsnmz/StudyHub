@@ -2,7 +2,7 @@
 
 - 记录人：开发/维护
 - 更新时间：2026-11-24
-- 版本：0.5.1
+- 版本：0.6.0
 
 > 目的：以后改功能、查问题时，先看这里“为什么变成现在这样”，再看 `KERNEL.md` 的接口与不变量。
 
@@ -18,6 +18,7 @@
 | 0.4 | 2026-11-23 | 公网单文件：html.cafe | 完成 |
 | 0.5 | 2026-11-24 | 后端 SQLite + 同步 + 跨浏览器听力 + 工程化 | 完成 |
 | 0.5.1 | 2026-11-24 | 词汇改打字默写、写译改 textarea 键盘作答 | 完成 |
+| 0.6.0 | 2026-11-24 | 六级轨道 + 自选目标学习日期 + 六级听力 MP3 | 完成 |
 
 ---
 
@@ -216,16 +217,46 @@ server/index.js    HTTP 服务/日志/优雅退出
 
 ---
 
+## 0.6.0 六级轨道 + 自选目标日期（2026-11-24）
+
+### 目标
+
+用户提供 `E:\学习资料\英语资料\整理版\六级\`，要求做一份可自由替换的六级版本，并让用户自己选目标学习日期，而不是把计划写死在四六级考试当天。
+
+### 做了什么
+
+- 新增六级数据：196 词、3 套阅读、4 套听力（27 句 MP3）、4 篇写作 + 4 篇翻译、223 条冲刺卡；`data/cet6.js` 的翻译词卡直接复用 `cet6Vocab`，避免重复维护。
+- 新增 `assets/js/tracks.js`：`cet4` / `cet6` 两个轨道，各自带 `data/vocab/reading/listening/audio/write`。
+- `full.js` / `sprint.js` 改为按当前轨道取数；进度键隔离：`full` / `full.cet6`、`sprint` / `sprint.cet6`。
+- 设置页增加“备考方向”和“目标学习日期”；`examDate` 改为仅记录。
+- 计划表不再写死 26 天/12 月 19 日，而是按 `targetDate` 生成基础/强化/冲刺三段。
+- `scripts/build-listening-audio.mjs` 支持 `cet4` / `cet6` 参数；六级 27 句 MP3 已生成。
+
+### 修过的坑
+
+- `full.js` 的 `audioLines()` 仍硬编码 `cet4ListeningAudio`，切六级会播四级音频；已改为 `TRACK.audio`。
+- `sprint.js` 里重复声明 `var TRACK_NAME`，后一次覆盖前一次，导致六级标题变四级；已拆成 `TRACK_NAME` 与 `SECTION_NAME`。
+- `cet6.js` 的翻译词卡依赖 `cet6Vocab`，`index.html` 必须先加载 `cet6-vocab.js` 再加载 `cet6.js`。
+
+### 验证
+
+- `npm.cmd run check`：51 个文件，0 失败。
+- `npm.cmd test`：4/4。
+- `node .work/cdp-cet6.mjs`：`DATA OK`（223/78/145/196/3/4）、`PLAN OK`（26 天、三段）、`DICT6 OK`、`SPRINT OK`（223 卡）、`AUDIO OK`（data URI、第 1/7 句）、`CET4 OK`（切回四级）、`MOBILE OK`（390px）、无 console error。
+- 单文件 2643.1 KB、38 个内联脚本、sync 已移除。
+
+---
+
 ## 已知问题 / 待办
 
 | 优先级 | 事项 | 说明 |
 | --- | --- | --- |
 | 高 | Firefox/Safari 实机听力 | 已实测 Edge + Chrome（Chromium 141）；Firefox/Safari 未实机，MP3 理论兼容 |
-| 高 | 公网服务端 | 目前服务端只在本机 8787；公网仍是单文件 + 本地保存 |
+| 高 | 校园 DNS | 本机校园 DNS 无法解析 `*.github.io` / `*.supabase.co`；需改 223.5.5.5 / 119.29.29.29 或用手机流量 |
 | 中 | PWA | 无 manifest/service worker，手机不能“添加到主屏” |
 | 中 | 数据加密 | SQLite/备份未加密；同步码泄露=进度泄露 |
 | 中 | 真题版权 | 当前为仿真题；引入真题需合法来源 |
-| 低 | 单文件体积 | 约 1.5 MB，音频占大头；可改外链/压缩 |
+| 低 | 单文件体积 | 0.6.0 约 2.6 MB（两套音频占大头）；可改外链/压缩 |
 | 低 | 同步并发 | 基于 `rev` 的乐观锁；多设备同时写会 409，需手工选边 |
 
 ---

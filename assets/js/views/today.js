@@ -36,9 +36,10 @@
     if (!sp || !sp.summary) return '';
     var s = sp.summary();
     if (s.daysLeft == null) return '';
-    var head = s.daysLeft > 0 ? '距考试 ' + s.daysLeft + ' 天' : '今天考试';
+    var tr = (StudyHub.tracks && StudyHub.tracks.current()) || { name: '四级' };
+    var head = s.daysLeft > 0 ? '距目标 ' + s.daysLeft + ' 天' : '今天就是目标日';
     return '<div class="card card-sprint"><div class="cs-main">' +
-      '<div><h3>四级冲刺 · ' + head + '</h3>' +
+      '<div><h3>' + tr.name + '冲刺 · ' + head + '</h3>' +
       '<p class="muted">今日新卡 ' + s.newTarget + ' 张 · 已完成 ' + s.done + '/' + s.total + ' 项' +
       (s.reviewOnly ? ' · 已进入复习期' : '') + ' · 今日完成 ' + s.percent + '%</p></div>' +
       '<button class="btn primary" id="gotoSprint">去冲刺</button></div>' +

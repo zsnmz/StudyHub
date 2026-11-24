@@ -9,16 +9,23 @@ import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const dataFile = path.join(root, 'data', 'cet4-listening.js');
-const audioDir = path.join(root, 'assets', 'audio', 'listening');
-const outFile = path.join(root, 'data', 'cet4-listening-audio.js');
+const track = (process.argv[2] || 'cet4').toLowerCase();
+const TRACKS = {
+  cet4: { data: 'cet4-listening.js', audio: 'listening', out: 'cet4-listening-audio.js', global: 'cet4Listening' },
+  cet6: { data: 'cet6-listening.js', audio: 'listening6', out: 'cet6-listening-audio.js', global: 'cet6Listening' }
+};
+const cfg = TRACKS[track];
+if (!cfg) throw new Error('未知轨道：' + track + '（可选 cet4 / cet6）');
+const dataFile = path.join(root, 'data', cfg.data);
+const audioDir = path.join(root, 'assets', 'audio', cfg.audio);
+const outFile = path.join(root, 'data', cfg.out);
 fs.mkdirSync(audioDir, { recursive: true });
 
 const sandbox = { window: {}, StudyHubData: {} };
 sandbox.window.StudyHubData = sandbox.StudyHubData;
 vm.runInNewContext(fs.readFileSync(dataFile, 'utf8'), sandbox, { filename: dataFile });
-const data = sandbox.StudyHubData && sandbox.StudyHubData.cet4Listening;
-if (!data || !Array.isArray(data.sets)) throw new Error('没有找到 cet4Listening.sets');
+const data = sandbox.StudyHubData && sandbox.StudyHubData[cfg.global];
+if (!data || !Array.isArray(data.sets)) throw new Error('没有找到 ' + cfg.global + '.sets');
 
 const VOICE = { M: 'en-US-GuyNeural', W: 'en-US-AriaNeural', N: 'en-US-AriaNeural' };
 const RATE = '-5%';
@@ -50,9 +57,9 @@ for (const set of data.sets) {
   }
 }
 
-const header = '/* 自动生成：node scripts/build-listening-audio.mjs；音频由 edge-tts 生成，跨浏览器播放。 */\n' +
+const header = '/* 自动生成：node scripts/build-listening-audio.mjs ' + track + '；音频由 edge-tts 生成，跨浏览器播放。 */\n' +
   'window.StudyHubData = window.StudyHubData || {};\n' +
-  'StudyHubData.cet4ListeningAudio = {\n' +
+  'StudyHubData.' + track + 'ListeningAudio = {\n' +
   '  meta: ' + JSON.stringify({ source: 'edge-tts', rate: RATE, generatedAt: manifest.generatedAt, note: '逐句 MP3，内联为 data URI，不依赖系统语音包' }) + ',\n' +
   '  sets: {\n';
 const body = Object.keys(sets).map(function (id) {

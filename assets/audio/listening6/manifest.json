@@ -1,0 +1,215 @@
+{
+  "generatedAt": "2026-11-24T10:34:40.341Z",
+  "rate": "-5%",
+  "sets": {
+    "l01": {
+      "title": "Asking for an Extension",
+      "lines": [
+        {
+          "index": 0,
+          "role": "M",
+          "voice": "en-US-GuyNeural",
+          "file": "assets\\audio\\listening6\\l01-01.mp3",
+          "bytes": 25488
+        },
+        {
+          "index": 1,
+          "role": "W",
+          "voice": "en-US-AriaNeural",
+          "file": "assets\\audio\\listening6\\l01-02.mp3",
+          "bytes": 28800
+        },
+        {
+          "index": 2,
+          "role": "M",
+          "voice": "en-US-GuyNeural",
+          "file": "assets\\audio\\listening6\\l01-03.mp3",
+          "bytes": 30096
+        },
+        {
+          "index": 3,
+          "role": "W",
+          "voice": "en-US-AriaNeural",
+          "file": "assets\\audio\\listening6\\l01-04.mp3",
+          "bytes": 36864
+        },
+        {
+          "index": 4,
+          "role": "M",
+          "voice": "en-US-GuyNeural",
+          "file": "assets\\audio\\listening6\\l01-05.mp3",
+          "bytes": 24912
+        },
+        {
+          "index": 5,
+          "role": "W",
+          "voice": "en-US-AriaNeural",
+          "file": "assets\\audio\\listening6\\l01-06.mp3",
+          "bytes": 30528
+        },
+        {
+          "index": 6,
+          "role": "M",
+          "voice": "en-US-GuyNeural",
+          "file": "assets\\audio\\listening6\\l01-07.mp3",
+          "bytes": 33120
+        }
+      ]
+    },
+    "l02": {
+      "title": "A Remote Internship",
+      "lines": [
+        {
+          "index": 0,
+          "role": "W",
+          "voice": "en-US-AriaNeural",
+          "file": "assets\\audio\\listening6\\l02-01.mp3",
+          "bytes": 40608
+        },
+        {
+          "index": 1,
+          "role": "M",
+          "voice": "en-US-GuyNeural",
+          "file": "assets\\audio\\listening6\\l02-02.mp3",
+          "bytes": 38016
+        },
+        {
+          "index": 2,
+          "role": "W",
+          "voice": "en-US-AriaNeural",
+          "file": "assets\\audio\\listening6\\l02-03.mp3",
+          "bytes": 17280
+        },
+        {
+          "index": 3,
+          "role": "M",
+          "voice": "en-US-GuyNeural",
+          "file": "assets\\audio\\listening6\\l02-04.mp3",
+          "bytes": 32256
+        },
+        {
+          "index": 4,
+          "role": "W",
+          "voice": "en-US-AriaNeural",
+          "file": "assets\\audio\\listening6\\l02-05.mp3",
+          "bytes": 38448
+        },
+        {
+          "index": 5,
+          "role": "M",
+          "voice": "en-US-GuyNeural",
+          "file": "assets\\audio\\listening6\\l02-06.mp3",
+          "bytes": 31824
+        },
+        {
+          "index": 6,
+          "role": "W",
+          "voice": "en-US-AriaNeural",
+          "file": "assets\\audio\\listening6\\l02-07.mp3",
+          "bytes": 31968
+        }
+      ]
+    },
+    "l03": {
+      "title": "A Delayed Train",
+      "lines": [
+        {
+          "index": 0,
+          "role": "W",
+          "voice": "en-US-AriaNeural",
+          "file": "assets\\audio\\listening6\\l03-01.mp3",
+          "bytes": 30816
+        },
+        {
+          "index": 1,
+          "role": "M",
+          "voice": "en-US-GuyNeural",
+          "file": "assets\\audio\\listening6\\l03-02.mp3",
+          "bytes": 25488
+        },
+        {
+          "index": 2,
+          "role": "W",
+          "voice": "en-US-AriaNeural",
+          "file": "assets\\audio\\listening6\\l03-03.mp3",
+          "bytes": 29088
+        },
+        {
+          "index": 3,
+          "role": "M",
+          "voice": "en-US-GuyNeural",
+          "file": "assets\\audio\\listening6\\l03-04.mp3",
+          "bytes": 30960
+        },
+        {
+          "index": 4,
+          "role": "W",
+          "voice": "en-US-AriaNeural",
+          "file": "assets\\audio\\listening6\\l03-05.mp3",
+          "bytes": 33552
+        },
+        {
+          "index": 5,
+          "role": "M",
+          "voice": "en-US-GuyNeural",
+          "file": "assets\\audio\\listening6\\l03-06.mp3",
+          "bytes": 44784
+        }
+      ]
+    },
+    "l04": {
+      "title": "A Campus Sustainability Project",
+      "lines": [
+        {
+          "index": 0,
+          "role": "M",
+          "voice": "en-US-GuyNeural",
+          "file": "assets\\audio\\listening6\\l04-01.mp3",
+          "bytes": 31680
+        },
+        {
+          "index": 1,
+          "role": "W",
+          "voice": "en-US-AriaNeural",
+          "file": "assets\\audio\\listening6\\l04-02.mp3",
+          "bytes": 42624
+        },
+        {
+          "index": 2,
+          "role": "M",
+          "voice": "en-US-GuyNeural",
+          "file": "assets\\audio\\listening6\\l04-03.mp3",
+          "bytes": 22896
+        },
+        {
+          "index": 3,
+          "role": "W",
+          "voice": "en-US-AriaNeural",
+          "file": "assets\\audio\\listening6\\l04-04.mp3",
+          "bytes": 37296
+        },
+        {
+          "index": 4,
+          "role": "M",
+          "voice": "en-US-GuyNeural",
+          "file": "assets\\audio\\listening6\\l04-05.mp3",
+          "bytes": 38448
+        },
+        {
+          "index": 5,
+          "role": "W",
+          "voice": "en-US-AriaNeural",
+          "file": "assets\\audio\\listening6\\l04-06.mp3",
+          "bytes": 23904
+        },
+        {
+          "index": 6,
+          "role": "M",
+          "voice": "en-US-GuyNeural",
+          "file": "assets\\audio\\listening6\\l04-07.mp3",
+          "bytes": 14256
+        }
+      ]
+    }
+  }
+}

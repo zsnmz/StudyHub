@@ -1,11 +1,16 @@
-/* 四级冲刺 · 背诵计划 / 闪卡 / 检测 / 错题本
-   数据来自 data/cet4.js；进度存在 store 的 sprint 键下，和原有任务互不干扰。 */
+/* 冲刺 · 背诵计划 / 闪卡 / 检测 / 错题本
+   数据按当前备考方向（四级/六级）取；进度存在 store 的 sprint 键下，和原有任务互不干扰。 */
 (function (global) {
   'use strict';
   var St = global.StudyHub.state;
   var ui = global.StudyHub.ui;
   var store = global.StudyHub.store;
-  var CAT = global.StudyHubData && global.StudyHubData.cet4;
+  var TRACK = (global.StudyHub.tracks && global.StudyHub.tracks.current()) || { id: 'cet4', name: '四级', label: 'CET-4', data: { items: [] } };
+  var TRACK_ID = TRACK.id;
+  var TRACK_NAME = TRACK.name;
+  var TRACK_LABEL = TRACK.label;
+  var STATE_KEY = TRACK_ID === 'cet4' ? 'sprint' : 'sprint.' + TRACK_ID;
+  var CAT = TRACK.data;
   var ITEMS = (CAT && CAT.items) || [];
   var MAP = {};
   ITEMS.forEach(function (it) { MAP[it.id] = it; });
@@ -14,12 +19,15 @@
   var TYPE_NAME = {
     pattern: '句型', template: '模板', word: '词块', vocab: '词汇', phrase: '短语'
   };
-  var TRACK_NAME = { writing: '作文', translation: '翻译' };
+  var SECTION_NAME = { writing: '作文', translation: '翻译' };
 
   function ns() { return store.ns(store.profile()); }
   function today() { return St.dateKey(); }
   function addDays(d, n) { return St.addDays(d, n); }
-  function examDate() { return St.settings().examDate || '2026-12-19'; }
+  function examDate() {
+    var s = St.settings();
+    return s.targetDate || s.examDate || '2026-12-19';
+  }
   function daysLeft() { return St.daysUntil(examDate()); }
   function diffDays(a, b) {
     var pa = a.split('-'), pb = b.split('-');
@@ -37,7 +45,7 @@
       progress: {}, log: {}, wrong: [], history: []
     };
   }
-  var state = ns().get('sprint', null);
+  var state = ns().get(STATE_KEY, null);
   if (!state || typeof state !== 'object') state = defaults();
   if (!state.progress || typeof state.progress !== 'object') state.progress = {};
   if (!state.log || typeof state.log !== 'object') state.log = {};
@@ -45,7 +53,7 @@
   if (!Array.isArray(state.history)) state.history = [];
   if (!state.start) state.start = today();
   if (!state.direction) state.direction = 'zh2en';
-  function save() { ns().set('sprint', state); }
+  function save() { ns().set(STATE_KEY, state); }
   save();
 
   function progress(id) { return state.progress[id] || null; }
@@ -259,7 +267,7 @@
     return '<span class="sp-dot sp-dot-mid">复习中</span>';
   }
   function hotBadge(it) { return it.hot ? '<span class="sp-hot">高频</span>' : ''; }
-  function typeLabel(it) { return TRACK_NAME[it.track] + ' · ' + (TYPE_NAME[it.type] || '内容'); }
+  function typeLabel(it) { return SECTION_NAME[it.track] + ' · ' + (TYPE_NAME[it.type] || '内容'); }
   function titleOf(it) {
     if (it.type === 'template') return it.name;
     return it.en || it.zh;
@@ -302,7 +310,7 @@
 
   function render(host) {
     if (!CAT || !ITEMS.length) {
-      host.innerHTML = '<div class="card"><h2>四级冲刺</h2><p class="muted">内容库未加载。</p></div>';
+      host.innerHTML = '<div class="card"><h2>' + TRACK_NAME + '冲刺</h2><p class="muted">内容库未加载。</p></div>';
       return;
     }
     recHost = host;
@@ -321,10 +329,10 @@
     var html = '<div class="view-inner sp-wrap">' +
       '<div class="sp-hero">' +
         '<div class="sp-hero-main">' +
-          '<span class="sp-kicker">四级冲刺 · CET-4</span>' +
-          '<h2>' + (examPassed ? '考试已结束' : (left === 0 ? '今天就是考试日' : '距考试 <b>' + left + '</b> 天')) + '</h2>' +
-          '<p>' + (examPassed ? '可以回看错题和模板，做考后复盘。' :
-            ('计划第 ' + dayNo + ' 天 · 考试日 ' + exam + ' · ' +
+          '<span class="sp-kicker">' + TRACK_NAME + '冲刺 · ' + TRACK_LABEL + '</span>' +
+          '<h2>' + (examPassed ? '目标日期已过' : (left === 0 ? '今天就是目标日' : '距目标 <b>' + left + '</b> 天')) + '</h2>' +
+          '<p>' + (examPassed ? '可以回看错题和模板，做复盘。' :
+            ('计划第 ' + dayNo + ' 天 · 目标日 ' + exam + ' · ' +
               (ts.plan.reviewOnly ? '最后冲刺：只复习，不背新卡' : '今日新卡 ' + (ts.plan.wNew.length + ts.plan.tNew.length) + ' 张'))) + '</p>' +
           '<div class="sp-hero-actions">' +
             (ts.plan.reviewOnly
@@ -519,18 +527,18 @@
     '</div>' +
 
     '<div class="card sp-card">' +
-      '<div class="sp-card-head"><h2>冲刺日历</h2><span class="muted">从 ' + state.start + ' 到考试</span></div>' +
+      '<div class="sp-card-head"><h2>冲刺日历</h2><span class="muted">从 ' + state.start + ' 到目标日</span></div>' +
       calendarGrid() +
     '</div>' +
 
     '<div class="card sp-card">' +
-      '<div class="sp-card-head"><h2>到考试前的排期</h2><span class="muted">按当前进度估算</span></div>' +
+      '<div class="sp-card-head"><h2>到目标日前的排期</h2><span class="muted">按当前进度估算</span></div>' +
       scheduleGrid() +
       '<p class="sp-note">顺序：作文句型 → 模板 → 词块；翻译句型 → 高频词 → 短语。每天先清到期复习；最后 3 天只复习。缺一天，后面会自动多分 1–2 张。</p>' +
     '</div>' +
 
     '<div class="card sp-card"><div class="sp-card-head"><h2>计划设置</h2></div>' +
-      '<div class="form-row"><label>四级考试日期</label><input id="spExam" type="date" value="' + examDate() + '" /></div>' +
+      '<div class="form-row"><label>目标日期</label><input id="spExam" type="date" value="' + examDate() + '" /></div>' +
       '<div class="form-row"><label>每日新卡量</label><select id="spDaily">' +
         '<option value="0"' + (!state.dailyNew ? ' selected' : '') + '>自动（按剩余天数）</option>' +
         [6, 8, 10, 12].map(function (n) {
@@ -547,7 +555,7 @@
 
     '<div class="card sp-card"><div class="sp-card-head"><h2>使用建议</h2></div><ul class="sp-tips">' +
       (CAT.tips || []).map(function (t) { return '<li>' + ui.esc(t) + '</li>'; }).join('') +
-    '</ul><p class="muted small">内容来源：' + ui.esc((CAT.meta && CAT.meta.source) || '四级备考资料') +
+    '</ul><p class="muted small">内容来源：' + ui.esc((CAT.meta && CAT.meta.source) || (TRACK_NAME + '备考资料')) +
     ' · 共 ' + ITEMS.length + ' 条（作文 ' + (CAT.meta ? CAT.meta.writingCount : '') +
     ' / 翻译 ' + (CAT.meta ? CAT.meta.translationCount : '') + '）</p></div>';
   }
@@ -570,7 +578,7 @@
   }
   function scheduleGrid() {
     var left = daysLeft();
-    if (left < 0) return '<p class="muted">考试已过，排期不再更新。</p>';
+    if (left < 0) return '<p class="muted">目标日期已过，排期不再更新。</p>';
     var p = plan();
     var rem = ITEMS.filter(function (it) { return !isLearned(it.id); }).length;
     var per = dailyTarget();
@@ -578,7 +586,7 @@
     for (var i = 0; i <= left; i++) {
       var d = addDays(today(), i);
       var label, cls = '';
-      if (i === left) { label = '考试'; cls = ' exam'; }
+      if (i === left) { label = '目标日'; cls = ' exam'; }
       else if (left - i <= 3) { label = '只复习'; cls = ' review'; }
       else {
         var n = i === 0 ? (p.wNew.length + p.tNew.length) : Math.min(per, rem);
@@ -635,7 +643,7 @@
     var ex = host.querySelector('#spExam');
     if (ex) ex.addEventListener('change', function () {
       if (!ex.value) return;
-      St.saveSettings({ examDate: ex.value });
+      St.saveSettings({ targetDate: ex.value });
       paint(host);
     });
     var dl = host.querySelector('#spDaily');
@@ -720,7 +728,7 @@
           '<p class="sp-rec-answer">' + ui.esc(answer) + '</p>' +
           (it.note ? '<p class="sp-note">' + ui.esc(it.note) + '</p>' : '') +
           (it.example ? '<p class="sp-ex">例：' + ui.esc(it.example) + '</p>' : '') +
-          '<p class="sp-source">' + (it.hot ? '高频考点 · ' : '') + TRACK_NAME[it.track] + ' ' + (TYPE_NAME[it.type] || '') + '</p></div>';
+          '<p class="sp-source">' + (it.hot ? '高频考点 · ' : '') + SECTION_NAME[it.track] + ' ' + (TYPE_NAME[it.type] || '') + '</p></div>';
       }
 
       host.innerHTML = '<div class="view-inner sp-recite">' +
