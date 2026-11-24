@@ -9,7 +9,7 @@
 ## 1. 设计原则
 
 1. **本地优先**：任何功能先保证 `file://` 双击可用；网络/服务端是增强，不是前提。
-2. **轻构建**：没有打包器/前端依赖；`npm.cmd run build` 把源码按 `scripts/site.scripts.json` 顺序拼成 `assets/dist/app.js`，减少请求数。改完 JS 重新 build 再刷新。
+2. **轻构建**：只有 terser 一个 devDependency；`npm.cmd run build` 把源码按 `scripts/site.scripts.json` 顺序拼成 `assets/dist/app.js`，再压缩成入口实际加载的 `assets/dist/app.min.js`，减少请求数与传输量。改完 JS 重新 build 再刷新。
 3. **单一存储入口**：页面只通过 `StudyHub.store` 读写 localStorage。
 4. **数据与视图分离**：题库在 `data/*.js`，视图只消费 `StudyHubData`。
 5. **可回退**：单文件、完整目录、服务端三种形态都能用；同步失败自动退回本地。
@@ -22,7 +22,7 @@
 ### 2.1 启动顺序（`index.html`）
 
 ```text
-assets/dist/app.js      ← 37 个源码按 scripts/site.scripts.json 顺序合并
+assets/dist/app.min.js  ← 37 个源码合并后由 terser 压缩（入口实际加载）
 assets/js/sync.js       ← 可选；单文件构建会移除
 ```
 
@@ -363,10 +363,10 @@ node scripts/make-single.mjs --keep-sync --out studyhub-single.html
 
 1. 读 `index.html`；
 2. 把 `<link rel="stylesheet" href="assets/css/app.css">` 换成 `<style>`；
-3. 把 `assets/dist/app.js`（以及可选的 `sync.js`）内联成一个 `<script>`；
+3. 把 `assets/dist/app.min.js`（以及可选的 `sync.js`）内联成一个 `<script>`；
 4. 默认移除 `sync.js`，并把 footer 改成“单文件版 · 数据保存在本机浏览器”；
 5. 校验没有残留 `script src` 或 `assets/` 样式引用；
-6. 输出 `studyhub-single.html`（当前约 0.56 MB）。
+6. 输出 `studyhub-single.html`（当前约 0.44 MB）。
 
 注意：听力 MP3 不再内联；单文件分享时要把 `assets/audio/` 一起带上，或只使用 `file://` 本机目录。
 

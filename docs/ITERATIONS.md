@@ -281,10 +281,11 @@ server/index.js    HTTP 服务/日志/优雅退出
 
 - 问题：手机打开公网站加载很久，部分浏览器直接 not found；原因是首屏 40 个 `<script src>`，其中两个音频库约 2.1 MB，移动网络下请求数过多。
 - 修复：
-  - `scripts/build-site.mjs` 按 `scripts/site.scripts.json` 把 37 个脚本合并成 `assets/dist/app.js`（约 506 KB）；`index.html` 只加载 app.js + sync.js。
+  - `scripts/build-site.mjs` 按 `scripts/site.scripts.json` 把 37 个脚本合并成 `assets/dist/app.js`（约 506 KB），再用 terser 压成 `assets/dist/app.min.js`（约 387 KB，gzip 约 137 KB）；`index.html` 只加载 app.min.js + sync.js。
   - 两个 `*-listening-audio.js` 不再随首屏加载；`full.js.audioLines()` 在无内联库时按需使用 `assets/audio/listening*/**.mp3`。
-  - 单文件改为内联 app.js，约 559 KB；音频按相对路径请求。
-- 验证：`node --check assets/dist/app.js` 通过；`npm.cmd run check` 54 文件 0 失败；`file://` 与 8787 均只加载 2 个脚本；听力 `#fu-audio-el.src` 指向 `assets/audio/listening/l01-01.mp3` 且 `readyState=4`。
+  - 单文件改为内联 app.min.js，约 440 KB；音频按相对路径请求。
+- 验证：`node --check assets/dist/app.min.js` 通过；`npm.cmd run check` 55 文件 0 失败；`file://` 与 8787 均只加载 2 个脚本；听力 `#fu-audio-el.src` 指向 `assets/audio/listening/l01-01.mp3` 且 `readyState=4`。
+- 公网复测：`index.html` 1934 字节、2 个 defer，`app.min.js` 387 KB；无 console error。
 
 ---
 
@@ -297,7 +298,7 @@ server/index.js    HTTP 服务/日志/优雅退出
 | 中 | PWA | 无 manifest/service worker，手机不能“添加到主屏” |
 | 中 | 数据加密 | SQLite/备份未加密；同步码泄露=进度泄露 |
 | 中 | 真题版权 | 当前为仿真题；引入真题需合法来源 |
-| 低 | 单文件体积 | 0.6.1 约 2.65 MB（两套音频占大头）；可改外链/压缩 |
+| 低 | 单文件体积 | 0.6.1 压缩后约 0.44 MB（音频已外链）；可继续按路线拆分数据 |
 | 低 | 同步并发 | 基于 `rev` 的乐观锁；多设备同时写会 409，需手工选边 |
 
 ---

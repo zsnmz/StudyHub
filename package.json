@@ -16,5 +16,8 @@
     "audio": "node scripts/build-listening-audio.mjs",
     "build": "node scripts/build-site.mjs",
     "single": "node scripts/make-single.mjs"
+  },
+  "devDependencies": {
+    "terser": "^5.51.4"
   }
 }

@@ -2,9 +2,9 @@
 
 一个**本地优先**的四/六级复习应用：可选四级 CET-4 / 六级 CET-6，按自选目标日期生成逐日计划，196 个高频词、听力/阅读/写作/翻译练习、键盘作答与自评、作文翻译冲刺库，以及可选的 SQLite 本地服务端 / Supabase 云端同步。
 
-入口已打包成 `assets/dist/app.js`，没有前端依赖。直接打开 `index.html` 就能用；启动 `server/` 后，同一份进度会额外保存到服务端 SQLite；部署到 GitHub Pages 后，同一份进度会自动同步到 Supabase，换设备输入同步码即可恢复。
+入口已打包成 `assets/dist/app.min.js`（约 387 KB，gzip 约 137 KB），没有前端运行时依赖。直接打开 `index.html` 就能用；启动 `server/` 后，同一份进度会额外保存到服务端 SQLite；部署到 GitHub Pages 后，同一份进度会自动同步到 Supabase，换设备输入同步码即可恢复。
 
-改完 `assets/js/` 或 `data/` 后，运行 `npm.cmd run build` 重新打包；只改文档/样式不需要。
+改完 `assets/js/` 或 `data/` 后，先运行一次 `npm.cmd install`（安装 terser），再运行 `npm.cmd run build` 重新打包；只改文档/样式不需要。
 
 固定公网地址：<https://zsnmz.github.io/StudyHub/>
 
@@ -145,7 +145,7 @@ npm.cmd start          # 启动服务端，默认 http://127.0.0.1:8787
 npm.cmd run dev        # 文件变动自动重启（node --watch）
 npm.cmd test           # 服务端 API / 数据库测试
 npm.cmd run check      # 全项目 JS 语法检查
-npm.cmd run build      # 合并 assets/js + data 为 assets/dist/app.js（改源码后必跑）
+npm.cmd run build      # 合并 assets/js + data，生成 app.js 与压缩版 app.min.js（改源码后必跑）
 npm.cmd run backup     # 立即备份数据库
 npm.cmd run audio      # 重新生成四级听力 MP3（需 Python + edge-tts）
 node scripts/build-listening-audio.mjs cet6   # 重新生成六级听力
@@ -160,11 +160,12 @@ npm.cmd run single     # 生成 studyhub-single.html
 
 ```text
 学习舱StudyHub/
-├─ index.html                 入口，加载 app.js + sync.js
+├─ index.html                 入口，加载 app.min.js + sync.js
 ├─ favicon.ico                站点图标
 ├─ assets/
 │  ├─ css/app.css             全部样式
-│  ├─ dist/app.js             合并后的主程序（由 build 生成，已提交）
+│  ├─ dist/app.js             合并后的主程序（调试用，由 build 生成）
+│  ├─ dist/app.min.js         压缩后的主程序（入口实际加载，由 build 生成，已提交）
 │  ├─ js/
 │  │  ├─ store.js             localStorage 读写 / 快照 / 替换
 │  │  ├─ sync.js              本地优先同步层（可选）
@@ -201,6 +202,6 @@ npm.cmd run single     # 生成 studyhub-single.html
 - 服务端默认只监听 `127.0.0.1`，没有账号体系；同步码就是密码，泄露等于泄露进度。
 - 服务端 CORS 默认 `*`，仅适合本机/可信内网；公网部署请设置 `CORS_ORIGIN`、加 HTTPS 和反向代理。
 - 单文件版没有服务端，换浏览器/清站点数据后进度不会自动跟着走，需导出/导入 JSON。
-- 听力 MP3 约 25–30 KB/句，只在打开听力并播放时请求；不再随首屏加载。首屏为 `index.html + app.css + app.js` 三个请求，app.js 约 500 KB。
+- 听力 MP3 约 25–30 KB/句，只在打开听力并播放时请求；不再随首屏加载。首屏为 `index.html + app.css + app.min.js` 三个请求，app.min.js 约 387 KB（gzip 约 137 KB）。
 - 阅读/听力/写译为仿真练习，不是官方真题；写译用键盘输入，不做笔迹识别。
 - 题目和词表是静态数据，更新内容需要改 `data/*.js`。
