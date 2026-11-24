@@ -24,7 +24,7 @@ html = html.replace(
 );
 
 if (!keepSync) {
-  html = html.replace(/\s*<script src="assets\/js\/sync\.js"><\/script>/, '');
+  html = html.replace(/\s*<script[^>]*src="assets\/js\/sync\.js"[^>]*><\/script>/, '');
   html = html.replace(
     '本地优先 · 云端同步可选 · 数据保存在本机与服务端 SQLite · 解析不联网',
     '单文件版 · 数据保存在本机浏览器 · 可导出 JSON 备份'
@@ -32,7 +32,7 @@ if (!keepSync) {
 }
 
 let count = 0;
-html = html.replace(/<script src="([^"]+)"><\/script>/g, function (match, src) {
+html = html.replace(/<script[^>]*src="([^"]+)"[^>]*><\/script>/g, function (match, src) {
   const file = path.join(root, src.replace(/\//g, path.sep));
   if (!fs.existsSync(file)) throw new Error('找不到脚本：' + src);
   count++;

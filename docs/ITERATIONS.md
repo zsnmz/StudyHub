@@ -274,6 +274,8 @@ server/index.js    HTTP 服务/日志/优雅退出
 - `npm.cmd test`：5/5（新增反馈测试）。
 - CDP：设置页提交反馈成功，`#fbMsg` 显示“已提交，谢谢！”，服务端 `feedbackRows` 增加。
 - Supabase REST 匿名 insert 返回 201。
+- 公网 GitHub Pages 实测：`target.mode='supabase'`，提交成功，pending 0，无 console error。
+- 单文件 `studyhub-single.html`：2652.7 KB、39 个内联脚本，反馈提交成功。
 
 ---
 
