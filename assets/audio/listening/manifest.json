@@ -1,0 +1,201 @@
+{
+  "generatedAt": "2026-11-24T01:56:22.314Z",
+  "rate": "-5%",
+  "sets": {
+    "l01": {
+      "title": "Library Renewal",
+      "lines": [
+        {
+          "index": 0,
+          "role": "M",
+          "voice": "en-US-GuyNeural",
+          "file": "assets\\audio\\listening\\l01-01.mp3",
+          "bytes": 22464
+        },
+        {
+          "index": 1,
+          "role": "W",
+          "voice": "en-US-AriaNeural",
+          "file": "assets\\audio\\listening\\l01-02.mp3",
+          "bytes": 42048
+        },
+        {
+          "index": 2,
+          "role": "M",
+          "voice": "en-US-GuyNeural",
+          "file": "assets\\audio\\listening\\l01-03.mp3",
+          "bytes": 27936
+        },
+        {
+          "index": 3,
+          "role": "W",
+          "voice": "en-US-AriaNeural",
+          "file": "assets\\audio\\listening\\l01-04.mp3",
+          "bytes": 37584
+        },
+        {
+          "index": 4,
+          "role": "M",
+          "voice": "en-US-GuyNeural",
+          "file": "assets\\audio\\listening\\l01-05.mp3",
+          "bytes": 13680
+        },
+        {
+          "index": 5,
+          "role": "W",
+          "voice": "en-US-AriaNeural",
+          "file": "assets\\audio\\listening\\l01-06.mp3",
+          "bytes": 31824
+        }
+      ]
+    },
+    "l02": {
+      "title": "Dinner for Two",
+      "lines": [
+        {
+          "index": 0,
+          "role": "W",
+          "voice": "en-US-AriaNeural",
+          "file": "assets\\audio\\listening\\l02-01.mp3",
+          "bytes": 24624
+        },
+        {
+          "index": 1,
+          "role": "M",
+          "voice": "en-US-GuyNeural",
+          "file": "assets\\audio\\listening\\l02-02.mp3",
+          "bytes": 20448
+        },
+        {
+          "index": 2,
+          "role": "W",
+          "voice": "en-US-AriaNeural",
+          "file": "assets\\audio\\listening\\l02-03.mp3",
+          "bytes": 29664
+        },
+        {
+          "index": 3,
+          "role": "M",
+          "voice": "en-US-GuyNeural",
+          "file": "assets\\audio\\listening\\l02-04.mp3",
+          "bytes": 29952
+        },
+        {
+          "index": 4,
+          "role": "W",
+          "voice": "en-US-AriaNeural",
+          "file": "assets\\audio\\listening\\l02-05.mp3",
+          "bytes": 35280
+        },
+        {
+          "index": 5,
+          "role": "M",
+          "voice": "en-US-GuyNeural",
+          "file": "assets\\audio\\listening\\l02-06.mp3",
+          "bytes": 29952
+        },
+        {
+          "index": 6,
+          "role": "W",
+          "voice": "en-US-AriaNeural",
+          "file": "assets\\audio\\listening\\l02-07.mp3",
+          "bytes": 30960
+        }
+      ]
+    },
+    "l03": {
+      "title": "A Delayed Train",
+      "lines": [
+        {
+          "index": 0,
+          "role": "M",
+          "voice": "en-US-GuyNeural",
+          "file": "assets\\audio\\listening\\l03-01.mp3",
+          "bytes": 25776
+        },
+        {
+          "index": 1,
+          "role": "W",
+          "voice": "en-US-AriaNeural",
+          "file": "assets\\audio\\listening\\l03-02.mp3",
+          "bytes": 46800
+        },
+        {
+          "index": 2,
+          "role": "M",
+          "voice": "en-US-GuyNeural",
+          "file": "assets\\audio\\listening\\l03-03.mp3",
+          "bytes": 23040
+        },
+        {
+          "index": 3,
+          "role": "W",
+          "voice": "en-US-AriaNeural",
+          "file": "assets\\audio\\listening\\l03-04.mp3",
+          "bytes": 35136
+        },
+        {
+          "index": 4,
+          "role": "M",
+          "voice": "en-US-GuyNeural",
+          "file": "assets\\audio\\listening\\l03-05.mp3",
+          "bytes": 18720
+        },
+        {
+          "index": 5,
+          "role": "W",
+          "voice": "en-US-AriaNeural",
+          "file": "assets\\audio\\listening\\l03-06.mp3",
+          "bytes": 33552
+        }
+      ]
+    },
+    "l04": {
+      "title": "An Internship Interview",
+      "lines": [
+        {
+          "index": 0,
+          "role": "W",
+          "voice": "en-US-AriaNeural",
+          "file": "assets\\audio\\listening\\l04-01.mp3",
+          "bytes": 34128
+        },
+        {
+          "index": 1,
+          "role": "M",
+          "voice": "en-US-GuyNeural",
+          "file": "assets\\audio\\listening\\l04-02.mp3",
+          "bytes": 30672
+        },
+        {
+          "index": 2,
+          "role": "W",
+          "voice": "en-US-AriaNeural",
+          "file": "assets\\audio\\listening\\l04-03.mp3",
+          "bytes": 34560
+        },
+        {
+          "index": 3,
+          "role": "M",
+          "voice": "en-US-GuyNeural",
+          "file": "assets\\audio\\listening\\l04-04.mp3",
+          "bytes": 33840
+        },
+        {
+          "index": 4,
+          "role": "W",
+          "voice": "en-US-AriaNeural",
+          "file": "assets\\audio\\listening\\l04-05.mp3",
+          "bytes": 37872
+        },
+        {
+          "index": 5,
+          "role": "M",
+          "voice": "en-US-GuyNeural",
+          "file": "assets\\audio\\listening\\l04-06.mp3",
+          "bytes": 30384
+        }
+      ]
+    }
+  }
+}

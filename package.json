@@ -1,0 +1,19 @@
+{
+  "name": "studyhub",
+  "version": "0.5.1",
+  "private": true,
+  "type": "module",
+  "description": "学习舱 StudyHub：本地优先的四级复习应用，带 SQLite 持久化与跨浏览器听力音频",
+  "engines": {
+    "node": ">=22.9.0"
+  },
+  "scripts": {
+    "start": "node --env-file-if-exists=.env server/index.js",
+    "dev": "node --watch --env-file-if-exists=.env server/index.js",
+    "test": "node --test tests/server.test.js",
+    "check": "node scripts/check-syntax.mjs",
+    "backup": "node server/backup.js --once",
+    "audio": "node scripts/build-listening-audio.mjs",
+    "single": "node scripts/make-single.mjs"
+  }
+}

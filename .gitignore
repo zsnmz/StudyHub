@@ -1,0 +1,14 @@
+node_modules/
+.env
+.env.local
+server/data/
+server/backups/
+.work/
+.screenshots/
+studyhub-single.html
+四级冲刺-分享版.zip
+.deploy/
+.trae-html-share-packages/
+*.log
+.DS_Store
+Thumbs.db.deploy.zip
