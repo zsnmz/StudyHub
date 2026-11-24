@@ -4,6 +4,8 @@
 
 没有构建步骤，没有前端依赖。直接打开 `index.html` 就能用；启动 `server/` 后，同一份进度会额外保存到服务端 SQLite；部署到 GitHub Pages 后，同一份进度会自动同步到 Supabase，换设备输入同步码即可恢复。
 
+固定公网地址：<https://zsnmz.github.io/StudyHub/>
+
 ---
 
 ## 1. 现在有什么
@@ -66,7 +68,7 @@ npm.cmd run single
 
 生成 `studyhub-single.html`，CSS/JS/音频全部内联，可直接发给别人或上传到静态托管。
 
-现成静态预览：<https://html.cafe/x0e2050ae>（无后端同步；需要 SQLite 持久化时用 A/B 方式的完整目录）。
+固定公网地址：<https://zsnmz.github.io/StudyHub/>（GitHub Pages + Supabase；首次打开会自动创建同步码，换设备用「设置 → 云端同步」输入同步码即可恢复）。
 
 注意：单文件版默认**移除 sync.js**，只使用浏览器 localStorage，不会请求本机 8787；需要同步时用 A/B 方式的完整目录。
 
