@@ -17,8 +17,9 @@
 1. 项目：`bheonzqtihbvjvrviodf`（Auto 区域）
 2. SQL Editor 运行 [`../supabase/schema.sql`](../supabase/schema.sql)
 3. 把 Project URL 与 publishable key 写入 [`../data/supabase.js`](../data/supabase.js)
-4. 表：`studyhub_progress`、`studyhub_history`；RPC：`studyhub_get`、`studyhub_save`
+4. 表：`studyhub_progress`、`studyhub_history`、`feedback`；RPC：`studyhub_get`、`studyhub_save`
 5. 前端只拿 publishable key；**不要**把 service_role key 放进代码。
+6. `feedback` 表只允许匿名 insert，不开放 select；在 Table Editor 查看用户反馈。
 
 ## 3. 跨设备
 

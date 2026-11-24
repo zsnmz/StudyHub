@@ -1,8 +1,20 @@
 import {
-  getProgress, saveProgress, listHistory, getRevisionData, stats
+  getProgress, saveProgress, listHistory, getRevisionData, stats, addFeedback
 } from './db.js';
 
 const ID_RE = /^[A-Za-z0-9_-]{8,64}$/;
+const FEEDBACK_CATEGORIES = new Set(['bug', 'content', 'feature', 'other']);
+const feedbackHits = new Map();
+
+function allowFeedback(req) {
+  const ip = (req.socket && req.socket.remoteAddress) || 'unknown';
+  const now = Date.now();
+  const recent = (feedbackHits.get(ip) || []).filter(function (t) { return now - t < 10 * 60 * 1000; });
+  if (recent.length >= 10) return false;
+  recent.push(now);
+  feedbackHits.set(ip, recent);
+  return true;
+}
 
 function httpError(status, code, message) {
   const err = new Error(message);
@@ -84,7 +96,7 @@ export async function handleApi(req, res, url, ctx) {
       return sendJson(res, 200, {
         ok: true,
         app: 'studyhub',
-        version: '0.5.1',
+        version: '0.6.1',
         now: new Date().toISOString(),
         uptimeSec: Math.round(process.uptime()),
         stats: stats(db),
@@ -94,6 +106,28 @@ export async function handleApi(req, res, url, ctx) {
 
     if (segments.length === 2 && segments[1] === 'stats' && req.method === 'GET') {
       return sendJson(res, 200, { ok: true, stats: stats(db) });
+    }
+
+    if (segments.length === 2 && segments[1] === 'feedback' && req.method === 'POST') {
+      if (!allowFeedback(req)) throw httpError(429, 'too_many_requests', '反馈提交太频繁，请稍后再试');
+      const body = await readJson(req, Math.min(config.maxBodyBytes, 20 * 1024));
+      const category = String(body.category || 'other');
+      const message = String(body.message || '').trim();
+      if (!FEEDBACK_CATEGORIES.has(category)) throw httpError(400, 'invalid_category', '反馈类型不正确');
+      if (message.length < 5 || message.length > 2000) {
+        throw httpError(400, 'invalid_message', '反馈内容需为 5–2000 字');
+      }
+      const saved = addFeedback(db, {
+        category,
+        message,
+        contact: body.contact,
+        page: body.page,
+        track: body.track,
+        app_version: body.app_version,
+        sync_id: body.sync_id,
+        user_agent: req.headers['user-agent']
+      });
+      return sendJson(res, 201, { ok: true, id: saved.id, createdAt: saved.createdAt });
     }
 
     if (segments[1] === 'progress' && segments[2]) {

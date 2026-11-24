@@ -3,6 +3,7 @@
   'use strict';
   var St = global.StudyHub.state, ui = global.StudyHub.ui, store = global.StudyHub.store;
   var sync = global.StudyHub.sync;
+  var feedback = global.StudyHub.feedback;
 
   function render(host) {
     var s = St.settings();
@@ -56,6 +57,26 @@
       '</div>' +
       '<p class="muted small" id="syncMsg"></p>' +
       '</div>' +
+      '<div class="card"><h3>意见反馈</h3>' +
+      '<p class="muted">遇到报错、内容错误，或想要新功能，可以直接写在这里。提交后会进入维护者的反馈表；网络不通时会先保存在本机，可复制后发给我。</p>' +
+      '<div class="form-row"><label>类型</label>' +
+      '<select id="fbCategory" class="input">' +
+      '<option value="bug">功能异常</option>' +
+      '<option value="content">内容纠错</option>' +
+      '<option value="feature">功能建议</option>' +
+      '<option value="other">其他</option>' +
+      '</select></div>' +
+      '<div class="form-row"><label>内容</label>' +
+      '<textarea id="fbMessage" class="input" rows="4" maxlength="2000" placeholder="请写清楚：在哪个页面、做了什么、期望是什么（至少 5 个字）"></textarea></div>' +
+      '<div class="form-row"><label>联系方式（可选）</label>' +
+      '<input id="fbContact" class="input" type="text" maxlength="120" placeholder="邮箱 / 微信 / QQ，方便回复你" /></div>' +
+      '<div class="row-actions">' +
+      '<button id="fbSubmit" class="btn primary">提交反馈</button>' +
+      '<button id="fbCopyText" class="btn">复制反馈内容</button>' +
+      '<button id="fbRetry" class="btn">重试本机待发</button>' +
+      '</div>' +
+      '<p class="muted small" id="fbMsg"></p>' +
+      '</div>' +
       '<div class="card"><h3>意图模板一览</h3>' +
       '<p class="muted">收件箱就靠这些模板把一句话拆成待办，共 ' + intents.length + ' 类：</p>' +
       '<ul class="intent-list">' +
@@ -70,6 +91,66 @@
       '</ul></div></div>';
 
     function msg(t) { host.querySelector('#setMsg').textContent = t; }
+
+    /* ---------- 意见反馈 ---------- */
+    var fbMsgEl = host.querySelector('#fbMsg');
+    function fbMsg(t) { if (fbMsgEl) fbMsgEl.textContent = t; }
+    function copyText(text) {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        return navigator.clipboard.writeText(text);
+      }
+      var ta = document.createElement('textarea');
+      ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+      document.body.appendChild(ta); ta.select();
+      try { document.execCommand('copy'); } catch (e) { /* ignore */ }
+      ta.remove();
+      return Promise.resolve();
+    }
+    if (!feedback) {
+      fbMsg('反馈模块没有加载（feedback.js 缺失），暂时不能提交。');
+      ['fbSubmit', 'fbCopyText', 'fbRetry'].forEach(function (id) {
+        var b = host.querySelector('#' + id);
+        if (b) b.disabled = true;
+      });
+    } else {
+      var fbPending = feedback.pendingCount();
+      if (fbPending) fbMsg('本机还有 ' + fbPending + ' 条待发送反馈，可点“重试本机待发”。');
+      host.querySelector('#fbSubmit').addEventListener('click', function () {
+        var category = host.querySelector('#fbCategory').value;
+        var message = host.querySelector('#fbMessage').value;
+        var contact = host.querySelector('#fbContact').value;
+        if (String(message).trim().length < 5) { fbMsg('请至少写 5 个字，方便定位问题。'); return; }
+        var btn = host.querySelector('#fbSubmit');
+        btn.disabled = true; fbMsg('正在提交……');
+        feedback.submit({ category: category, message: message, contact: contact }).then(function (r) {
+          btn.disabled = false;
+          if (r.ok) {
+            fbMsg('已提交，谢谢！');
+            host.querySelector('#fbMessage').value = '';
+          } else if (r.saved) {
+            fbMsg('网络不可用，已保存到本机（' + (r.error || '提交失败') + '）。可以复制内容后发给我。');
+          } else {
+            fbMsg('提交失败：' + (r.error || '未知错误'));
+          }
+        });
+      });
+      host.querySelector('#fbCopyText').addEventListener('click', function () {
+        var text = feedback.buildText({
+          category: host.querySelector('#fbCategory').value,
+          message: host.querySelector('#fbMessage').value,
+          contact: host.querySelector('#fbContact').value
+        });
+        copyText(text).then(function () { fbMsg('反馈内容已复制，可以直接粘贴发给我。'); })
+          .catch(function () { fbMsg('复制失败，请手动选中内容。'); });
+      });
+      host.querySelector('#fbRetry').addEventListener('click', function () {
+        if (!feedback.pendingCount()) { fbMsg('本机没有待发送的反馈。'); return; }
+        fbMsg('正在重试……');
+        feedback.retryPending().then(function (r) {
+          fbMsg('已发送 ' + r.sent + ' 条；没发出去的仍保存在本机。');
+        });
+      });
+    }
 
     host.querySelector('#trackSelect').addEventListener('change', function (e) {
       var next = e.target.value === 'cet6' ? 'cet6' : 'cet4';

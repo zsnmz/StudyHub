@@ -19,7 +19,19 @@ const SCHEMA = `
   );
   CREATE INDEX IF NOT EXISTS idx_history_profile
     ON progress_history(profile_id, id DESC);
-  PRAGMA user_version = 1;
+  CREATE TABLE IF NOT EXISTS feedback (
+    id          INTEGER PRIMARY KEY AUTOINCREMENT,
+    created_at  TEXT NOT NULL,
+    category    TEXT NOT NULL,
+    message     TEXT NOT NULL,
+    contact     TEXT,
+    page        TEXT,
+    track       TEXT,
+    app_version TEXT,
+    sync_id     TEXT,
+    user_agent  TEXT
+  );
+  PRAGMA user_version = 2;
 `;
 
 export function openDb(dbPath) {
@@ -117,7 +129,42 @@ export function getRevisionData(db, profileId, rev) {
 export function stats(db) {
   const p = db.prepare('SELECT COUNT(*) AS count, COALESCE(SUM(rev), 0) AS revs FROM progress').get();
   const h = db.prepare('SELECT COUNT(*) AS count FROM progress_history').get();
-  return { profiles: p.count, revisions: p.revs, historyRows: h.count };
+  const f = db.prepare('SELECT COUNT(*) AS count FROM feedback').get();
+  return { profiles: p.count, revisions: p.revs, historyRows: h.count, feedbackRows: f.count };
+}
+
+const FEEDBACK_CATEGORIES = new Set(['bug', 'content', 'feature', 'other']);
+
+function cleanText(value, max) {
+  if (value == null) return '';
+  return String(value).replace(/\s+/g, ' ').trim().slice(0, max);
+}
+
+export function addFeedback(db, input) {
+  const category = FEEDBACK_CATEGORIES.has(input.category) ? input.category : 'other';
+  const message = cleanText(input.message, 2000);
+  if (message.length < 5) throw new Error('反馈内容至少 5 个字');
+  const row = {
+    created_at: new Date().toISOString(),
+    category,
+    message,
+    contact: cleanText(input.contact, 120) || null,
+    page: cleanText(input.page, 200) || null,
+    track: cleanText(input.track, 20) || null,
+    app_version: cleanText(input.app_version, 40) || null,
+    sync_id: cleanText(input.sync_id, 64) || null,
+    user_agent: cleanText(input.user_agent, 300) || null
+  };
+  const result = db.prepare(
+    `INSERT INTO feedback(created_at, category, message, contact, page, track, app_version, sync_id, user_agent)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`
+  ).run(row.created_at, row.category, row.message, row.contact, row.page, row.track, row.app_version, row.sync_id, row.user_agent);
+  return { id: Number(result.lastInsertRowid), createdAt: row.created_at };
+}
+
+export function listFeedback(db, limit = 100) {
+  const n = Math.min(Math.max(Number(limit) || 100, 1), 500);
+  return db.prepare('SELECT * FROM feedback ORDER BY id DESC LIMIT ?').all(n);
 }
 
 export function closeDb(db) {

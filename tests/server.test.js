@@ -92,6 +92,32 @@ test('validation and path traversal', async () => {
   assert.equal(traversal.status, 404);
 });
 
+test('feedback accepts anonymous insert and validates fields', async () => {
+  const ok = await call('POST', '/api/feedback', {
+    category: 'bug',
+    message: '测试反馈：设置页提交是否成功。',
+    contact: 'test@example.com',
+    page: '#settings',
+    track: 'cet6',
+    app_version: '0.6.1'
+  });
+  assert.equal(ok.status, 201);
+  assert.equal(ok.json.ok, true);
+  assert.ok(ok.json.id > 0);
+
+  const tooShort = await call('POST', '/api/feedback', { category: 'other', message: '短' });
+  assert.equal(tooShort.status, 400);
+  assert.equal(tooShort.json.error.code, 'invalid_message');
+
+  const badCategory = await call('POST', '/api/feedback', { category: 'spam', message: '这是一条类型不合法的反馈。' });
+  assert.equal(badCategory.status, 400);
+  assert.equal(badCategory.json.error.code, 'invalid_category');
+
+  const stats = await call('GET', '/api/stats');
+  assert.equal(stats.status, 200);
+  assert.ok(stats.json.stats.feedbackRows >= 1);
+});
+
 test('backup copy exists', () => {
   const files = fs.readdirSync(path.join(tmp, 'data'));
   assert.ok(files.includes('studyhub.db'));

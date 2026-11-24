@@ -223,6 +223,7 @@ label{font-size:var(--fs-sm);display:inline-flex;align-items:center;gap:4px;colo
 /* ============ 设置 ============ */
 .form-row{display:flex;align-items:center;gap:12px;margin:10px 0;flex-wrap:wrap}
 .form-row label{font-size:var(--fs-sm);color:var(--muted);min-width:120px}
+.form-row textarea{flex:1 1 320px;min-width:240px;min-height:110px;width:100%}
 .intent-list{list-style:none;margin:0;padding:0}
 .intent-list > li{padding:12px 0;border-bottom:1px solid #EEF2F7}
 .intent-list > li:last-child{border-bottom:0}

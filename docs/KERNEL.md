@@ -1,6 +1,6 @@
 # 学习舱 StudyHub · 项目内核
 
-- 版本：0.6.0
+- 版本：0.6.1
 - 更新：2026-11-24
 - 适用范围：`index.html`、`assets/`、`data/`、`server/`、`scripts/`
 
@@ -235,6 +235,7 @@ body: { data: snapshot('real'), baseRev: meta.rev, force?: true }
 | GET | `/api/progress/:id/history` | 最近 50 个版本 |
 | GET | `/api/progress/:id/export` | 下载 JSON |
 | POST | `/api/progress/:id/restore` | body `{rev}`，恢复到历史版本 |
+| POST | `/api/feedback` | 提交反馈；5–2000 字、四类、10 次/10 分钟限流 |
 | OPTIONS | `/api/*` | CORS 预检 |
 
 `id` 规则：`^[A-Za-z0-9_-]{8,64}$`。
@@ -259,6 +260,19 @@ CREATE TABLE progress_history (
 );
 
 CREATE INDEX idx_history_profile ON progress_history(profile_id, id DESC);
+
+CREATE TABLE feedback (
+  id          INTEGER PRIMARY KEY AUTOINCREMENT,
+  created_at  TEXT NOT NULL,
+  category    TEXT NOT NULL,
+  message     TEXT NOT NULL,
+  contact     TEXT,
+  page        TEXT,
+  track       TEXT,
+  app_version TEXT,
+  sync_id     TEXT,
+  user_agent  TEXT
+);
 ```
 
 - WAL、`synchronous=NORMAL`、`busy_timeout=5000`、外键开。
