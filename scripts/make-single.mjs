@@ -16,6 +16,7 @@ const outIndex = args.indexOf('--out');
 const outFile = path.resolve(root, outIndex >= 0 && args[outIndex + 1] ? args[outIndex + 1] : 'studyhub-single.html');
 
 let html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
+html = html.replace(/\s*<link[^>]*rel="preload"[^>]*href="assets\/[^"]*"[^>]*>/, '');
 const cssPath = path.join(root, 'assets/css/app.css');
 const css = fs.readFileSync(cssPath, 'utf8');
 html = html.replace(

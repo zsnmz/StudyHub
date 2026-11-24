@@ -37,7 +37,7 @@
   </nav>
 
   <main class="view" id="view">
-    <div class="loading">正在加载学习舱……</div>
+    <div class="loading">正在加载学习舱……<br><small>首次约 5–10 秒，之后浏览器会缓存</small></div>
   </main>
 
   <footer class="footer">本地优先 · 云端同步可选 · 数据保存在浏览器或云端 · 解析不联网</footer>
@@ -46,6 +46,16 @@
 <!-- 计时进行中的常驻控制条（固定定位，放在 .app 外避免打乱 grid） -->
 <div class="timer-bar" id="timerBar" hidden></div>
 
+<script>
+setTimeout(function () {
+  var v = document.getElementById('view');
+  if (v && v.querySelector('.loading')) {
+    v.innerHTML = '<div class="loading">加载时间较长，可能是网络或 DNS 问题。<br>' +
+      '<button class="btn" onclick="location.reload()">重试</button><br>' +
+      '<small>手机可切换到流量；电脑可把 DNS 改为 223.5.5.5 或 119.29.29.29。</small></div>';
+  }
+}, 15000);
+</script>
 <script defer src="assets/dist/app.min.js"></script>
 <script defer src="assets/js/sync.js"></script>
 </body>
