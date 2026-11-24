@@ -793,7 +793,7 @@
       body.innerHTML =
         '<div class="card fu-card"><div class="fu-card-head"><h2>目标日期已到/已过</h2></div>' +
         '<p class="muted small">当前目标日期是 ' + esc(target) + '。请到「设置 → 目标学习日期」改成一个未来日期，计划会自动重排。</p>' +
-        '<button type="button" class="btn" data-go="plan">刷新计划</button></div>';
+        '<button type="button" class="btn" data-act="open-settings">去设置改日期</button></div>';
       return;
     }
     var shortPlan = left <= 3;
@@ -844,6 +844,7 @@
     var btn = e.target.closest('[data-act]');
     if (!btn) return;
     var act = btn.getAttribute('data-act');
+    if (act === 'open-settings') { SH.app.navigate('settings'); return; }
     if (act === 'start-daily') {
       if (!queueVocab().length) { toast('今天的词已经完成，去做听力或阅读吧'); return; }
       go('vocab');
