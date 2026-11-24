@@ -1,4 +1,4 @@
-import {
+﻿import {
   getProgress, saveProgress, listHistory, getRevisionData, stats, addFeedback
 } from './db.js';
 
@@ -96,7 +96,7 @@ export async function handleApi(req, res, url, ctx) {
       return sendJson(res, 200, {
         ok: true,
         app: 'studyhub',
-        version: '0.6.1',
+        version: '0.6.2',
         now: new Date().toISOString(),
         uptimeSec: Math.round(process.uptime()),
         stats: stats(db),

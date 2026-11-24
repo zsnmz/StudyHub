@@ -16,11 +16,11 @@
   WORDS.forEach(function (w) { BY_ID[w.id] = w; });
   var GAP = [0, 1, 2, 4, 7, 15, 30];
   var TABS = [
-    ['home', '今日'], ['vocab', '高频词'], ['listening', '听力'],
+    ['vocab', '高频词'], ['listening', '听力'],
     ['reading', '阅读'], ['write', '写译'], ['plan', '计划']
   ];
 
-  var el = null, body = null, st = null, S = null, tab = 'home';
+  var el = null, body = null, st = null, S = null, tab = 'vocab';
   var session = null, quiz = null, player = null, timer = null, audio = null, draftTimer = null;
   var writeMode = 'writing';
 
@@ -64,7 +64,7 @@
       vocab: { p: {}, log: {} },
       done: { listening: {}, reading: {}, writing: {}, translation: {} },
       answers: {},
-      lastTab: 'home'
+      lastTab: 'vocab'
     };
   }
   function load() {
@@ -190,12 +190,12 @@
     var pct = todayPercent();
     return '<section class="fu-hero">' +
       '<div class="fu-hero-main">' +
-        '<div class="fu-kicker">' + TRACK_LABEL + ' · 全套复习</div>' +
-        '<h1>把' + TRACK_NAME + '拆成每天能做完的小任务</h1>' +
+        '<div class="fu-kicker">' + TRACK_LABEL + ' · 备考计划</div>' +
+        '<h1>今天，学一点' + TRACK_NAME + '</h1>' +
         '<p>高频词 ' + WORDS.length + ' 个 · 听力 ' + LS.sets.length + ' 套 · 阅读 ' + RD.sets.length +
           ' 篇 · 写译 ' + (WR.writing.length + WR.translation.length) + ' 题 · 冲刺 ' + SPRINT_ITEMS.length + ' 卡</p>' +
         '<div class="fu-hero-actions">' +
-          '<button type="button" class="btn primary" data-act="start-daily">开始今日全套</button>' +
+          '<button type="button" class="btn primary" data-act="start-daily">开始今日学习</button>' +
           '<button type="button" class="btn" data-go="plan">看 ' + left + ' 天计划</button>' +
         '</div>' +
       '</div>' +
@@ -242,7 +242,6 @@
     if (session) return renderSession();
     if (quiz) return renderQuiz();
     if (player) return renderPlayer();
-    if (tab === 'home') return renderHome();
     if (tab === 'vocab') return renderVocab();
     if (tab === 'listening') return renderListeningList();
     if (tab === 'reading') return renderReadingList();
@@ -1045,8 +1044,8 @@
       el = host;
       st = SH.store.ns(TRACK_ID === 'cet4' ? 'full' : 'full.' + TRACK_ID);
       S = load();
-      tab = (payload && payload.tab) || S.lastTab || 'home';
-      if (!TABS.some(function (t) { return t[0] === tab; })) tab = 'home';
+      tab = (payload && payload.tab) || S.lastTab || 'vocab';
+      if (!TABS.some(function (t) { return t[0] === tab; })) tab = 'vocab';
       renderShell();
     },
     destroy: function () {

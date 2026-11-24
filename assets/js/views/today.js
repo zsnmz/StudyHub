@@ -113,17 +113,15 @@
       ovBar +
       sprintCard() +
       dueCard() +
-      '<div class="card today-head"><h2>今日</h2>' +
-      '<p class="muted">' + list.length + ' 条待办 · 已完成 ' + doneCount +
-      ' 条 · 剩余约 ' + ui.minutes(plannedMin) + '</p>' +
+      outcomeBlock(latestOutcome()) +
+      coldCard() +
+      '<div class="card today-tasks"><div class="today-head"><h2>今日待办</h2>' +
+      '<span class="muted small">' + list.length + ' 条 · 已完成 ' + doneCount +
+      ' 条 · 剩余约 ' + ui.minutes(plannedMin) + '</span></div>' +
       (snap.status !== 'idle'
         ? '<p class="timing">' + (snap.status === 'paused' ? '计时已暂停：' : '正在计时：') +
           ui.esc(snap.title || '自由学习') + ' · ' + timer.format(snap.seconds) + '</p>'
         : '') +
-      '</div>' +
-      outcomeBlock(latestOutcome()) +
-      coldCard() +
-      '<div class="card">' +
       (list.length
         ? '<ul class="task-list">' + list.map(function (t) {
             var tool = global.StudyHubData.toolOf(t.intent);

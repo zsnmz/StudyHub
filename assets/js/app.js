@@ -9,7 +9,7 @@
   var host = document.getElementById('view');
 
   var LABELS = {
-    inbox: '收件箱', draft: '草稿', today: '今日', full: '全套', sprint: '冲刺', practice: '练习', review: '复盘', settings: '设置'
+    inbox: '收件箱', draft: '草稿', today: '今日', full: '学习', sprint: '冲刺', practice: '练习', review: '复盘', settings: '设置'
   };
 
   function render(name, payload) {
@@ -38,7 +38,7 @@
   }
 
   function navigate(name, payload) {
-    if (!LABELS[name]) name = 'inbox';
+    if (!LABELS[name]) name = 'full';
     if (location.hash !== '#' + name) {
       location.hash = '#' + name;
       pendingPayload = payload || null;
@@ -52,8 +52,8 @@
     if (btn) navigate(btn.getAttribute('data-view'));
   });
   window.addEventListener('hashchange', function () {
-    var name = location.hash.replace('#', '') || 'inbox';
-    render(LABELS[name] ? name : 'inbox', pendingPayload);
+    var name = location.hash.replace('#', '') || 'full';
+    render(LABELS[name] ? name : 'full', pendingPayload);
     pendingPayload = null;
   });
   /* 计时变化只推给当前视图 */
@@ -186,8 +186,8 @@
     global.StudyHub.timer.restore();
     syncTimerBar();
     header();
-    var name = location.hash.replace('#', '') || 'inbox';
-    render(LABELS[name] ? name : 'inbox');
+    var name = location.hash.replace('#', '') || 'full';
+    render(LABELS[name] ? name : 'full');
     if (global.StudyHub.sync) global.StudyHub.sync.init();
   }
 
@@ -197,3 +197,4 @@
   };
   document.addEventListener('DOMContentLoaded', boot);
 })(window);
+

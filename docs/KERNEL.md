@@ -1,6 +1,6 @@
-# 学习舱 StudyHub · 项目内核
+﻿# 学习舱 StudyHub · 项目内核
 
-- 版本：0.6.1
+- 版本：0.6.2
 - 更新：2026-11-24
 - 适用范围：`index.html`、`assets/`、`data/`、`server/`、`scripts/`
 

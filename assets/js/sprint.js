@@ -303,7 +303,7 @@
   }
 
   /* ---------- 主视图 ---------- */
-  var uiTab = 'today';
+  var uiTab = 'writing';
   var subTab = { writing: 'pattern', translation: 'vocab' };
   var topicFilter = { writing: '', translation: '' };
   var recListener = null, recHost = null;
@@ -346,12 +346,11 @@
         '<div class="sp-ring" style="--pct:' + heroPct + '"><div><b>' + heroPct + '%</b><span>今日完成</span></div></div>' +
       '</div>' +
       '<div class="sp-tabs">' +
-        tabBtn('today', '今日计划') + tabBtn('writing', '作文') + tabBtn('translation', '翻译') +
+        tabBtn('writing', '作文') + tabBtn('translation', '翻译') +
         tabBtn('test', '检测') + tabBtn('progress', '进度') +
       '</div>';
 
-    if (uiTab === 'today') html += todayPane(ts);
-    else if (uiTab === 'writing') html += browsePane('writing');
+    if (uiTab === 'writing') html += browsePane('writing');
     else if (uiTab === 'translation') html += browsePane('translation');
     else if (uiTab === 'test') html += testPane();
     else html += progressPane();
@@ -497,11 +496,6 @@
     var learned = ITEMS.filter(function (it) { return isLearned(it.id); }).length;
     var mastered = ITEMS.filter(function (it) { return isMastered(it.id); }).length;
     var due = ITEMS.filter(function (it) { return isDue(it.id); }).length;
-    var stages = [0, 0, 0, 0, 0, 0, 0];
-    ITEMS.forEach(function (it) {
-      var p = progress(it.id);
-      if (p && p.seen) stages[clamp(p.stage || 0, 0, 6)]++;
-    });
     var wL = ITEMS.filter(function (it) { return it.track === 'writing' && isLearned(it.id); }).length;
     var tL = ITEMS.filter(function (it) { return it.track === 'translation' && isLearned(it.id); }).length;
     var wAll = ITEMS.filter(function (it) { return it.track === 'writing'; }).length;
@@ -519,26 +513,11 @@
     '</div>' +
 
     '<div class="card sp-card">' +
-      '<div class="sp-card-head"><h2>记忆阶段</h2><span class="muted">越靠右越稳</span></div>' +
-      '<div class="sp-stage">' + [0, 1, 2, 3, 4, 5, 6].map(function (s) {
-        return '<div class="sp-stage-col"><b>' + stages[s] + '</b><span>' + (s === 0 ? '待巩固' : s + ' 阶') + '</span></div>';
-      }).join('') + '</div>' +
-      '<p class="sp-note">评分「会了」会逐级拉长复习间隔：1 → 2 → 4 → 7 → 15 → 30 天；「不会」回到待巩固。</p>' +
-    '</div>' +
-
-    '<div class="card sp-card">' +
       '<div class="sp-card-head"><h2>冲刺日历</h2><span class="muted">从 ' + state.start + ' 到目标日</span></div>' +
       calendarGrid() +
     '</div>' +
 
-    '<div class="card sp-card">' +
-      '<div class="sp-card-head"><h2>到目标日前的排期</h2><span class="muted">按当前进度估算</span></div>' +
-      scheduleGrid() +
-      '<p class="sp-note">顺序：作文句型 → 模板 → 词块；翻译句型 → 高频词 → 短语。每天先清到期复习；最后 3 天只复习。缺一天，后面会自动多分 1–2 张。</p>' +
-    '</div>' +
-
-    '<div class="card sp-card"><div class="sp-card-head"><h2>计划设置</h2></div>' +
-      '<div class="form-row"><label>目标日期</label><input id="spExam" type="date" value="' + examDate() + '" /></div>' +
+    '<div class="card sp-card"><div class="sp-card-head"><h2>背诵设置</h2><span class="muted">目标日期在学习计划里改</span></div>' +
       '<div class="form-row"><label>每日新卡量</label><select id="spDaily">' +
         '<option value="0"' + (!state.dailyNew ? ' selected' : '') + '>自动（按剩余天数）</option>' +
         [6, 8, 10, 12].map(function (n) {
@@ -576,31 +555,6 @@
     }
     return '<div class="sp-grid26">' + cells.join('') + '</div>';
   }
-  function scheduleGrid() {
-    var left = daysLeft();
-    if (left < 0) return '<p class="muted">目标日期已过，排期不再更新。</p>';
-    var p = plan();
-    var rem = ITEMS.filter(function (it) { return !isLearned(it.id); }).length;
-    var per = dailyTarget();
-    var rows = [];
-    for (var i = 0; i <= left; i++) {
-      var d = addDays(today(), i);
-      var label, cls = '';
-      if (i === left) { label = '目标日'; cls = ' exam'; }
-      else if (left - i <= 3) { label = '只复习'; cls = ' review'; }
-      else {
-        var n = i === 0 ? (p.wNew.length + p.tNew.length) : Math.min(per, rem);
-        rem = Math.max(0, rem - n);
-        var wPart = Math.round(n * 0.3);
-        label = n ? ('<b>' + n + '</b> 张<span>作文 ' + wPart + ' / 翻译 ' + (n - wPart) + '</span>') : '复习';
-      }
-      rows.push('<div class="sp-sched-row' + cls + (i === 0 ? ' today' : '') + '">' +
-        '<b>' + (+d.slice(5, 7)) + '/' + (+d.slice(8, 10)) + '</b>' +
-        '<span>第 ' + (i + 1) + ' 天</span><em>' + label + '</em></div>');
-    }
-    return '<div class="sp-sched">' + rows.join('') + '</div>';
-  }
-
   /* ---------- 绑定 ---------- */
   function bind(host) {
     host.querySelectorAll('.sp-tab').forEach(function (btn) {
@@ -640,12 +594,6 @@
         else if (act === 'quick-wrong') { uiTab = 'test'; paint(host); }
       });
     });
-    var ex = host.querySelector('#spExam');
-    if (ex) ex.addEventListener('change', function () {
-      if (!ex.value) return;
-      St.saveSettings({ targetDate: ex.value });
-      paint(host);
-    });
     var dl = host.querySelector('#spDaily');
     if (dl) dl.addEventListener('change', function () {
       state.dailyNew = +dl.value || 0; save(); paint(host);
@@ -657,7 +605,7 @@
     var reset = host.querySelector('#spReset');
     if (reset) reset.addEventListener('click', function () {
       if (!confirm('确定重置冲刺进度？背诵、复习、检测和错题记录都会清空。')) return;
-      state = defaults(); save(); uiTab = 'today'; paint(host);
+      state = defaults(); save(); uiTab = 'writing'; paint(host);
     });
   }
 

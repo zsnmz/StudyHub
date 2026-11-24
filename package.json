@@ -1,6 +1,6 @@
-{
+﻿{
   "name": "studyhub",
-  "version": "0.6.1",
+  "version": "0.6.2",
   "private": true,
   "type": "module",
   "description": "学习舱 StudyHub：本地优先的四/六级复习应用，带目标日期排期、SQLite 持久化与跨浏览器听力音频",
@@ -21,3 +21,4 @@
     "terser": "^5.51.4"
   }
 }
+

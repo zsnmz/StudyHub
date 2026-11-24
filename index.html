@@ -15,7 +15,7 @@
       <span class="brand-mark">舱</span>
       <div class="brand-text">
         <strong>学习舱</strong>
-        <small>一句话 → 待办 → 执行 → 复盘</small>
+        <small>四级 · 六级 · 每日计划</small>
       </div>
     </div>
     <div class="topbar-right">
@@ -26,14 +26,17 @@
   </header>
 
   <nav class="tabbar" id="tabbar">
-    <button class="tab active" data-view="inbox">收件箱</button>
-    <button class="tab" data-view="draft">草稿</button>
+    <span class="tab-section">学习</span>
     <button class="tab" data-view="today">今日</button>
-    <button class="tab" data-view="full">全套</button>
+    <button class="tab active" data-view="full">学习</button>
     <button class="tab" data-view="sprint">冲刺</button>
+    <span class="tab-section">收集</span>
+    <button class="tab" data-view="inbox">收件箱</button>
+    <button class="tab" data-view="draft">草稿</button>
+    <span class="tab-section">复盘</span>
     <button class="tab tab-practice" data-view="practice">▶ 练习</button>
     <button class="tab" data-view="review">复盘</button>
-    <button class="tab" data-view="settings">设置</button>
+    <button class="tab tab-settings" data-view="settings">设置</button>
   </nav>
 
   <main class="view" id="view">
@@ -56,7 +59,7 @@ setTimeout(function () {
   }
 }, 15000);
 </script>
-<script defer src="assets/dist/app.min.js"></script>
-<script defer src="assets/js/sync.js"></script>
+        <script defer src="assets/dist/app.min.js"></script>
+  <script defer src="assets/js/sync.js"></script>
 </body>
 </html>
