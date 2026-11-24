@@ -11,6 +11,7 @@
   var ID_KEY = 'studyhub.sync.id';
   var API_KEY = 'studyhub.sync.api';
   var META_KEY = 'studyhub.sync.meta';
+  var FORCE_PULL_KEY = 'studyhub.sync.forcePull';
   var state = {
     status: 'local', message: '本地保存', lastSync: null, rev: 0,
     dirty: false, applying: false, busy: false, conflict: null,
@@ -292,6 +293,7 @@
     if (!/^[A-Za-z0-9_-]{8,64}$/.test(v)) return false;
     lsSet(ID_KEY, v);
     lsSet(META_KEY, '');
+    lsSet(FORCE_PULL_KEY, '1');
     state.id = v;
     location.reload();
     return true;
@@ -300,6 +302,8 @@
   function init() {
     if (state.started) return;
     state.started = true;
+    var forcePull = lsGet(FORCE_PULL_KEY) === '1';
+    if (forcePull) lsSet(FORCE_PULL_KEY, '');
     state.api = getApi();
     state.id = getProfileId();
     var badge = document.getElementById('syncState');
@@ -318,7 +322,7 @@
     setInterval(function () {
       if (state.dirty && !state.busy) push();
     }, 60000);
-    pull({ reload: true });
+    pull(forcePull ? { preferServer: true, reload: true } : { reload: true });
   }
 
   function info() {
