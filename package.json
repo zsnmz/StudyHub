@@ -14,6 +14,7 @@
     "check": "node scripts/check-syntax.mjs",
     "backup": "node server/backup.js --once",
     "audio": "node scripts/build-listening-audio.mjs",
+    "build": "node scripts/build-site.mjs",
     "single": "node scripts/make-single.mjs"
   }
 }

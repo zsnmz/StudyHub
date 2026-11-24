@@ -277,6 +277,15 @@ server/index.js    HTTP 服务/日志/优雅退出
 - 公网 GitHub Pages 实测：`target.mode='supabase'`，提交成功，pending 0，无 console error。
 - 单文件 `studyhub-single.html`：2652.7 KB、39 个内联脚本，反馈提交成功。
 
+### 首屏性能修复（0.6.1 补丁）
+
+- 问题：手机打开公网站加载很久，部分浏览器直接 not found；原因是首屏 40 个 `<script src>`，其中两个音频库约 2.1 MB，移动网络下请求数过多。
+- 修复：
+  - `scripts/build-site.mjs` 按 `scripts/site.scripts.json` 把 37 个脚本合并成 `assets/dist/app.js`（约 506 KB）；`index.html` 只加载 app.js + sync.js。
+  - 两个 `*-listening-audio.js` 不再随首屏加载；`full.js.audioLines()` 在无内联库时按需使用 `assets/audio/listening*/**.mp3`。
+  - 单文件改为内联 app.js，约 559 KB；音频按相对路径请求。
+- 验证：`node --check assets/dist/app.js` 通过；`npm.cmd run check` 54 文件 0 失败；`file://` 与 8787 均只加载 2 个脚本；听力 `#fu-audio-el.src` 指向 `assets/audio/listening/l01-01.mp3` 且 `readyState=4`。
+
 ---
 
 ## 已知问题 / 待办

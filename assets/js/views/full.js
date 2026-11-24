@@ -932,7 +932,13 @@
     if (!player || !player.set) return [];
     var lib = TRACK.audio || {};
     var sets = lib.sets || {};
-    return sets[player.set.id] || [];
+    var inline = sets[player.set.id];
+    if (inline && inline.length) return inline;
+    var script = player.set.script || [];
+    var base = TRACK_ID === 'cet6' ? 'assets/audio/listening6/' : 'assets/audio/listening/';
+    return script.map(function (_, i) {
+      return base + player.set.id + '-' + ('0' + (i + 1)).slice(-2) + '.mp3';
+    });
   }
   function audioPos() {
     if (!player || player.kind !== 'listening') return;

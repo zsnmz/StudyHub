@@ -9,7 +9,7 @@
 ## 1. 设计原则
 
 1. **本地优先**：任何功能先保证 `file://` 双击可用；网络/服务端是增强，不是前提。
-2. **无构建**：没有打包器、没有 npm 前端依赖；改完 JS 刷新即可。
+2. **轻构建**：没有打包器/前端依赖；`npm.cmd run build` 把源码按 `scripts/site.scripts.json` 顺序拼成 `assets/dist/app.js`，减少请求数。改完 JS 重新 build 再刷新。
 3. **单一存储入口**：页面只通过 `StudyHub.store` 读写 localStorage。
 4. **数据与视图分离**：题库在 `data/*.js`，视图只消费 `StudyHubData`。
 5. **可回退**：单文件、完整目录、服务端三种形态都能用；同步失败自动退回本地。
@@ -22,10 +22,16 @@
 ### 2.1 启动顺序（`index.html`）
 
 ```text
+assets/dist/app.js      ← 37 个源码按 scripts/site.scripts.json 顺序合并
+assets/js/sync.js       ← 可选；单文件构建会移除
+```
+
+`site.scripts.json` 的顺序等价于：
+
+```text
 store.js
-sync.js                 ← 可选；单文件构建会移除
 data/words.js … cet4-write.js → cet6-vocab.js → cet6-reading.js → cet6-listening.js
-→ cet6-listening-audio.js → cet6-write.js → cet6.js
+→ cet6-write.js → cet6.js
 ui.js → core.js → tracks.js → learn.js → demo.js → timer.js → parser.js
 app.js                  ← DOMContentLoaded 时 boot()
 views/*.js              ← 注册 StudyHub.views.<name>
@@ -35,9 +41,10 @@ views/full.js           ← 注册 full 视图（词汇打字检测、写译 tex
 
 关键点：
 
-- `store.js` 必须最先加载；`sync.js` 依赖它。
+- `store.js` 必须在 bundle 最前面；`sync.js` 作为独立脚本排在 bundle 后，依赖 `StudyHub.store`。
 - 所有视图在 `app.js` 之后加载，但 `app.js` 的 `boot()` 等 `DOMContentLoaded` 才执行，所以注册顺序安全。
-- 数据文件挂到 `window.StudyHubData`；`full.js` 用 `D.cet4Vocab`、`D.cet4Listening`、`D.cet4ListeningAudio` 等。
+- 数据文件挂到 `window.StudyHubData`；`full.js` 用 `D.cet4Vocab`、`D.cet4Listening` 等。
+- 听力音频库不再进首屏；`full.js.audioLines()` 优先用内联 data URI，没有时按 `assets/audio/listening*/<setId>-NN.mp3` 取文件。
 
 ### 2.2 全局命名空间
 
@@ -356,10 +363,12 @@ node scripts/make-single.mjs --keep-sync --out studyhub-single.html
 
 1. 读 `index.html`；
 2. 把 `<link rel="stylesheet" href="assets/css/app.css">` 换成 `<style>`；
-3. 把每个 `<script src="…">` 换成内联 `<script>`；
+3. 把 `assets/dist/app.js`（以及可选的 `sync.js`）内联成一个 `<script>`；
 4. 默认移除 `sync.js`，并把 footer 改成“单文件版 · 数据保存在本机浏览器”；
 5. 校验没有残留 `script src` 或 `assets/` 样式引用；
-6. 输出 `studyhub-single.html`（当前约 1.5 MB）。
+6. 输出 `studyhub-single.html`（当前约 0.56 MB）。
+
+注意：听力 MP3 不再内联；单文件分享时要把 `assets/audio/` 一起带上，或只使用 `file://` 本机目录。
 
 `--keep-sync` 适合“同源 http 部署 + 有服务端”的场景；纯静态托管不要保留，否则 https 页面会尝试请求 `http://127.0.0.1:8787`。
 
@@ -382,7 +391,7 @@ node scripts/make-single.mjs --keep-sync --out studyhub-single.html
 ### 加一个页面
 
 1. 新建 `assets/js/views/foo.js`，注册 `StudyHub.views.foo`；
-2. `index.html` 加 `<script src="assets/js/views/foo.js">`；
+2. 把路径加进 `scripts/site.scripts.json` 的 `scripts` 末尾，运行 `npm.cmd run build`；
 3. `app.js` 的 `LABELS` 加 `foo:'名称'`；
 4. `index.html` tabbar 加 `<button class="tab" data-view="foo">名称</button>`；
 5. 如需样式，追加到 `app.css` 末尾。
